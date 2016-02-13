@@ -1,5 +1,5 @@
-require 'user'
-require 'ppgthread'
+require_relative 'user'
+require_relative 'ppgthread'
 
 class PairProgrammingGitConsole
 
@@ -14,8 +14,8 @@ class PairProgrammingGitConsole
   def intro_prompt
     @user1 = new_user("navigator")
     @user2 = new_user("driver")
-    puts user1
-    puts user2
+    puts @user1
+    puts @user2
     @switch_timer = switch_timer
     @navigator = navigator
     @driver = driver
@@ -28,14 +28,17 @@ class PairProgrammingGitConsole
       email = gets
       info = {name: name, email: email, role: role}
       confirm_user_info?(info) ? User.new(info) : new_user("navigator")
+      puts
   end
 
   def confirm_user_info?(info)
     puts "\nName:  #{info[:name]}"
     puts "Email:  #{info[:email]}"
     puts "Role:  #{info[:role]}"
-    puts "Is this correct?"
-    return gets.chomp.downcase =~ /y+e?s?/
+    puts "Is this correct? (y/n)"
+    confirmation = gets
+
+    confirmation == "\n" ? confirm_user_info?(info) : confirmation.chomp.downcase =~ /y+e?s?/
   end
 
 end
