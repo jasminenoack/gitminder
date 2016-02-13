@@ -21,8 +21,7 @@ class PairProgrammingGitConsole
   end
 
   def prompt_nav_change
-      puts "Please change the navigator"
-      puts ""
+      puts "Please change the navigator\n"
   end
 
 end

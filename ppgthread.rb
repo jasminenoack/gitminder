@@ -15,15 +15,10 @@ class PPGThread
             @threads << Thread.new do
                 string = ""
                 loop do
-                    handle_key_press
-                    if @strings[-1].length > 0
-                        puts @strings[-1]
-                    end
-
-
-                   if @pairing_manager.needs_nav_change
+                    if @pairing_manager.needs_nav_change && @strings[-1].length < 1
                        puts "It has been #{@switch_time/60} minutes.  Please change the navigator"
                     end
+                    handle_key_press
 #                   process(input)
                 end
             end
@@ -67,12 +62,11 @@ class PPGThread
       when "\r"
         if @strings[-1].length > 0
             @strings << ""
-        else
-            puts ""
         end
         if @strings.length > 100
             @strings = @strings.drop(@strings.length - 100)
         end
+        puts ""
       when "\n"
         puts "LINE FEED"
       when "\e"
@@ -92,10 +86,10 @@ class PPGThread
       when "\e[3~"
         puts "ALTERNATE DELETE"
       when "\u0003"
-        puts "CONTROL-C"
         exit 0
       when /^.$/
         @strings[-1] << c
+        print c
       else
         puts "SOMETHING ELSE: #{c.inspect}"
       end
