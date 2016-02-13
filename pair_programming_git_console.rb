@@ -22,19 +22,20 @@ class PairProgrammingGitConsole
   end
 
   def new_user(role)
-      puts
-      puts "What is the name of the #{role}?"
+      puts "\nWhat is the #{role}'s name?"
       name = gets.chomp
       email = email_prompt(role)
       info = {name: name, email: email, role: role}
+
       confirm_user_info?(info) ? User.new(info) : new_user(role)
   end
 
   def email_prompt(role)
-      puts "What is the email of the #{role}?"
+      puts "What is the #{role}'s email?"
       email = gets.chomp
       raise SameEmailError, "**Driver and Navigator cannot have the same email!**" if @user1 && @user1.email == email
       raise EmailFormatError, "**Please enter a valid email address.**" unless email =~ /\A[^@\s]+@([^@\s]+\.)+[^@\s]+\z/
+
       email
     rescue StandardError => e
       puts e.message
