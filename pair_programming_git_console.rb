@@ -1,3 +1,6 @@
+require 'user'
+require 'ppgthread'
+
 class PairProgrammingGitConsole
 
   attr_accessor :thread, :switch_timer, :navigator, :driver
@@ -9,7 +12,10 @@ class PairProgrammingGitConsole
   end
 
   def intro_prompt
-    user1 = new_user("navigator")
+    @user1 = new_user("navigator")
+    @user2 = new_user("driver")
+    puts user1
+    puts user2
     @switch_timer = switch_timer
     @navigator = navigator
     @driver = driver
