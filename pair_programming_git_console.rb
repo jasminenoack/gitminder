@@ -20,7 +20,8 @@ class PairProgrammingGitConsole
   def new_user(role)
       name = name_prompt(role)
       email = email_prompt(role)
-      info = {name: name, email: email, role: role}
+      repo = repo_prompt(role)
+      info = {name: name, email: email, repo: repo, role: role}
 
       confirm_user_info?(info) ? User.new(info) : new_user(role)
   end
@@ -39,10 +40,22 @@ class PairProgrammingGitConsole
   def email_prompt(role)
       puts "\nWhat is the #{role}'s email?"
       email = gets.chomp
-      raise SameEmailError, "**Driver and Navigator cannot have the same email!**" if @user1 && @user1.email == email
-      raise EmailFormatError, "**Please enter a valid email address**" unless email =~ /\A[^@\s]+@([^@\s]+\.)+[^@\s]+\z/
+      raise DuplicateError, "**Driver and Navigator cannot have the same email!**" if @user1 && @user1.email == email
+      raise FormatError, "**Please enter a valid email address**" unless email =~ /\A[^@\s]+@([^@\s]+\.)+[^@\s]+\z/
 
       email
+    rescue ArgumentError => e
+      puts e.message
+      retry
+  end
+
+  def repo_prompt(role)
+    puts "What is the #{role}'s git repository url?"
+    repo = gets.chomp
+    raise DuplicateError, "**Driver and Navigator cannot have the same repo!**" if @user1 && @user1.repo == repo
+    raise FormatError, "Please enter a valid Github Repository address" unless repo =~ /(https?:\/\/)?github.com\/\w+\/\w+\.git/
+
+    repo
     rescue ArgumentError => e
       puts e.message
       retry
@@ -52,12 +65,12 @@ class PairProgrammingGitConsole
     puts "\nRole:  #{info[:role]}"
     puts "Name:  #{info[:name]}"
     puts "Email:  #{info[:email]}"
+    puts "Repo:  #{info[:repo]}"
     puts "Is this correct? (y/n)"
 
     confirm_prompt
-
     rescue InputError => e
-      puts "#{e.message}\n"
+      puts e.message
       retry
   end
 
@@ -124,8 +137,8 @@ class String
 end
 
 class InputError < ArgumentError; end
-class SameEmailError < ArgumentError; end
-class EmailFormatError < ArgumentError; end
+class DuplicateError < ArgumentError; end
+class FormatError < ArgumentError; end
 class NotIntegerError < ArgumentError; end
 class OutofBoundsError < ArgumentError; end
 
