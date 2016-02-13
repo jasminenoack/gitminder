@@ -13,8 +13,6 @@ class PairProgrammingGitConsole
   def intro_prompt
     @user1 = new_user("navigator")
     @user2 = new_user("driver")
-    puts @user1
-    puts @user2
     @switch_timer = switch_timer_prompt
     @navigator, @driver = @user1, @user2
   end
@@ -30,7 +28,8 @@ class PairProgrammingGitConsole
   def name_prompt(role)
     puts "\nWhat is the #{role}'s name?"
     name = gets.chomp
-    raise NoInputError, "**Please enter a name**" if name == ""
+    raise InputError, "**Please enter a name**" if name == ""
+
     name
     rescue ArgumentError => e
       puts e.message
@@ -56,20 +55,70 @@ class PairProgrammingGitConsole
     puts "Is this correct? (y/n)"
     confirmation = gets.chomp
 
-    confirmation == "" ? confirm_user_info?(info) : confirmation.chomp.downcase =~ /y+e?s?/
+    if !(confirmation.downcase =~ /[yn]+[eo]?s?/)
+      raise InputError, "Enter y or n"
+    else
+      return confirmation.downcase =~ /y+e?s?/
+    end
+
+    rescue InputError => e
+        puts e.message
+        retry
   end
 
   def switch_timer_prompt
     puts 'Switch every 15 minutes? (press enter or enter different number)'
     switch_timer = gets.chomp
-    timer_confirm(switch_timer) if switch_timer == "\n" || switch_timer
+    if switch_timer == ""
+      if timer_confirm?()
+        15
+      else
+        raise InputError
+      end
+    elsif switch_timer.is_i?
+      switch_timer = switch_timer.to_i
+      if switch_timer <= 120 && switch_timer >= 15
+        if timer_confirm?(switch_timer)
+          switch_timer
+        else
+           raise InputError
+         end
+      else
+        raise OutofBoundsError, "Value must be between 15 and 120"
+      end
+    else
+      raise NotIntegerError, "Enter a value between 15 and 120"
+    end
 
+    rescue InputError
+      retry
+    rescue OutofBoundsError => e
+      puts e.message
+      retry
+    rescue NotIntegerError => e
+      puts e.message
+      retry
+  end
+
+  def timer_confirm?(timer = 15)
+    puts "Switch every #{timer} minutes?"
+    confirmation = gets.chomp
+
+    confirmation == "" ? timer_cofirm?(timer) : confirmation.chomp.downcase =~ /y+e?s?/
   end
 
 end
 
-class NoInputError < ArgumentError; end
+class String
+    def is_i?
+       !!(self =~ /\A[-+]?[0-9]+\z/)
+    end
+end
+
+class InputError < ArgumentError; end
 class SameEmailError < ArgumentError; end
 class EmailFormatError < ArgumentError; end
+class NotIntegerError < ArgumentError; end
+class OutofBoundsError < ArgumentError; end
 
 PairProgrammingGitConsole.new
