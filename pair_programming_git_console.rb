@@ -22,13 +22,22 @@ class PairProgrammingGitConsole
   end
 
   def new_user(role)
-      puts "What is the name of the #{role}?"
-      name = gets
-      puts "What is the email of the #{role}?"
-      email = gets
-      info = {name: name, email: email, role: role}
-      confirm_user_info?(info) ? User.new(info) : new_user("navigator")
       puts
+      puts "What is the name of the #{role}?"
+      name = gets.chomp
+      email = email_prompt(role)
+      info = {name: name, email: email, role: role}
+      confirm_user_info?(info) ? User.new(info) : new_user(role)
+  end
+
+  def email_prompt(role)
+      puts "What is the email of the #{role}?"
+      email = gets.chomp
+      raise SameEmailError if @user1 && @user1.email == email
+      email
+    rescue SameEmailError
+      puts "Driver and Navigator cannot have the same email!\n"
+      retry
   end
 
   def confirm_user_info?(info)
@@ -42,5 +51,7 @@ class PairProgrammingGitConsole
   end
 
 end
+
+class SameEmailError < ArgumentError; end
 
 PairProgrammingGitConsole.new
