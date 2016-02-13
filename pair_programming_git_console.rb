@@ -37,7 +37,7 @@ class PairProgrammingGitConsole
   end
 
   def email_prompt(role)
-      puts "What is the #{role}'s email?"
+      puts "\nWhat is the #{role}'s email?"
       email = gets.chomp
       raise SameEmailError, "**Driver and Navigator cannot have the same email!**" if @user1 && @user1.email == email
       raise EmailFormatError, "**Please enter a valid email address**" unless email =~ /\A[^@\s]+@([^@\s]+\.)+[^@\s]+\z/
@@ -49,21 +49,16 @@ class PairProgrammingGitConsole
   end
 
   def confirm_user_info?(info)
-    puts "\nName:  #{info[:name]}"
+    puts "\nRole:  #{info[:role]}"
+    puts "Name:  #{info[:name]}"
     puts "Email:  #{info[:email]}"
-    puts "Role:  #{info[:role]}"
     puts "Is this correct? (y/n)"
-    confirmation = gets.chomp
 
-    if !(confirmation.downcase =~ /[yn]+[eo]?s?/)
-      raise InputError, "Enter y or n"
-    else
-      return confirmation.downcase =~ /y+e?s?/
-    end
+    confirm_prompt
 
     rescue InputError => e
-        puts e.message
-        retry
+      puts "#{e.message}\n"
+      retry
   end
 
   def switch_timer_prompt
@@ -87,24 +82,37 @@ class PairProgrammingGitConsole
         raise OutofBoundsError, "Value must be between 15 and 120"
       end
     else
-      raise NotIntegerError, "Enter a value between 15 and 120"
+      raise NotIntegerError, "Enter a number between 15 and 120"
     end
 
     rescue InputError
+      puts
       retry
     rescue OutofBoundsError => e
-      puts e.message
+      puts "#{e.message}\n"
       retry
     rescue NotIntegerError => e
-      puts e.message
+      puts "#{e.message}\n"
       retry
   end
 
   def timer_confirm?(timer = 15)
-    puts "Switch every #{timer} minutes?"
+    puts "Switch every #{timer} minutes? (y/n)"
+    confirm_prompt
+
+    rescue InputError => e
+      puts "#{e.message}\n"
+      retry
+  end
+
+  def confirm_prompt
     confirmation = gets.chomp
 
-    confirmation == "" ? timer_cofirm?(timer) : confirmation.chomp.downcase =~ /y+e?s?/
+    if !(confirmation.downcase =~ /([yn]+[eo]?s?|)/)
+      raise InputError, "Enter y or n"
+    else
+      return confirmation.downcase =~ /(y+e?s?|)/
+    end
   end
 
 end
