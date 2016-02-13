@@ -33,10 +33,10 @@ class PairProgrammingGitConsole
   def email_prompt(role)
       puts "What is the email of the #{role}?"
       email = gets.chomp
-      raise SameEmailError if @user1 && @user1.email == email
+      raise SameEmailError, "**Driver and Navigator cannot have the same email!**" if @user1 && @user1.email == email
       email
-    rescue SameEmailError
-      puts "Driver and Navigator cannot have the same email!\n"
+    rescue SameEmailError => e
+      puts e.message
       retry
   end
 
