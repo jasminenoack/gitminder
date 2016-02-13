@@ -34,8 +34,9 @@ class PairProgrammingGitConsole
       puts "What is the email of the #{role}?"
       email = gets.chomp
       raise SameEmailError, "**Driver and Navigator cannot have the same email!**" if @user1 && @user1.email == email
+      raise EmailFormatError, "**Please enter a valid email address.**" unless email =~ /\A[^@\s]+@([^@\s]+\.)+[^@\s]+\z/
       email
-    rescue SameEmailError => e
+    rescue StandardError => e
       puts e.message
       retry
   end
@@ -53,5 +54,6 @@ class PairProgrammingGitConsole
 end
 
 class SameEmailError < ArgumentError; end
+class EmailFormatError < ArgumentError; end
 
 PairProgrammingGitConsole.new
