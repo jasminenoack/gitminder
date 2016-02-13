@@ -1,9 +1,10 @@
 class PairProgrammingGitConsole
 
-  attr_accessor :switch_timer, :navigator, :driver
+  attr_accessor :thread, :switch_timer, :navigator, :driver
 
   def initialize()
     intro_prompt
+    @thread = PPGThread.new()
 
   end
 
@@ -12,3 +13,5 @@ class PairProgrammingGitConsole
     @navigator = navigator
     @driver = driver
   end
+
+end
