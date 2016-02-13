@@ -108,10 +108,10 @@ class PairProgrammingGitConsole
   def confirm_prompt
     confirmation = gets.chomp
 
-    if !(confirmation.downcase =~ /([yn]+[eo]?s?|)/)
+    if !(confirmation.downcase =~ /([yn]+[eo]?s?|^$)/)
       raise InputError, "Enter y or n"
     else
-      return confirmation.downcase =~ /(y+e?s?|)/
+      return confirmation.downcase =~ /(y+e?s?|^$)/
     end
   end
 
