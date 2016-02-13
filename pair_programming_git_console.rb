@@ -1,5 +1,6 @@
 require 'thwait'
 require_relative 'ppgthread'
+require 'io/console'
 
 class PairProgrammingGitConsole
 
@@ -19,11 +20,6 @@ class PairProgrammingGitConsole
     @navigator = navigator
     @driver = driver
   end
-
-  def prompt_nav_change
-      puts "Please change the navigator\n"
-  end
-
 end
 
 PairProgrammingGitConsole.new

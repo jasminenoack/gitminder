@@ -13,13 +13,19 @@ class PPGThread
     def run
         @threads << Thread.new do
             @threads << Thread.new do
-                string = ""
                 loop do
-                    if @pairing_manager.needs_nav_change && @strings[-1].length < 1
-                       puts "It has been #{@switch_time/60} minutes.  Please change the navigator"
+                    if @pairing_manager.needs_nav_change
+                        if @strings[-1].length < 1
+                            puts "It has been #{@switch_time/60} minutes.  Please change the navigator"
+                        else
+                            puts "\nIt has been #{@switch_time/60} minutes.  Please change the navigator"
+                            print @strings[-1]
+                        end
                     end
-                    handle_key_press
-#                   process(input)
+                    string = handle_key_press
+                    if string
+                       process(string)
+                    end
                 end
             end
             @threads << Thread.new do
@@ -27,7 +33,10 @@ class PPGThread
                     if !@pairing_manager.needs_nav_change
                         sleep @switch_time
                         @pairing_manager.needs_nav_change = true
-                        @pairing_manager.prompt_nav_change
+                        print "\r"
+                        print "\nIt has been #{@switch_time/60} minutes.  Please change the navigator\n"
+                        print "\r"
+                        print @strings[-1]
                     end
                 end
             end
@@ -56,7 +65,8 @@ class PPGThread
       c = read_char
       case c
       when " "
-        puts "SPACE"
+        @strings[-1] << " "
+        print " "
       when "\t"
         puts "TAB"
       when "\r"
@@ -67,6 +77,7 @@ class PPGThread
             @strings = @strings.drop(@strings.length - 100)
         end
         puts ""
+        return @strings[-2]
       when "\n"
         puts "LINE FEED"
       when "\e"
@@ -90,12 +101,8 @@ class PPGThread
       when /^.$/
         @strings[-1] << c
         print c
-      else
-        puts "SOMETHING ELSE: #{c.inspect}"
       end
     end
-        
-
 
     def process(input)
         puts "General input #{input}"
