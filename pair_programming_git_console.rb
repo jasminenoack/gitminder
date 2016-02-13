@@ -53,7 +53,7 @@ class PairProgrammingGitConsole
     puts "What is the #{role}'s git repository url?"
     repo = gets.chomp
     raise DuplicateError, "**Driver and Navigator cannot have the same repo!**" if @user1 && @user1.repo == repo
-    raise FormatError, "Please enter a valid Github Repository address" unless repo =~ /(https?:\/\/)?github.com\/\w+\/\w+\.git/
+    raise FormatError, "Please enter a valid Github Repository address" unless repo =~ /https?:\/\/github.com\/\w+\/\w+\.git/
 
     repo
     rescue ArgumentError => e
