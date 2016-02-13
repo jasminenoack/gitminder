@@ -1,20 +1,23 @@
 require_relative 'user'
 require_relative 'ppgthread'
 require_relative 'intro'
+require 'thwait'
+require_relative 'ppgthread'
+require 'io/console'
 
 class PairProgrammingGitConsole
 
-  include 'Intro'
+  include Intro
 
-  attr_accessor :thread, :switch_timer, :navigator, :driver
+  attr_accessor :thread, :switch_timer, :navigator, :driver, :needs_nav_change
 
   def initialize()
     intro_prompt
-    @thread = PPGThread.new()
+    @threads = []
+    @thread = PPGThread.new(@switch_timer, @user_1, @user_2, @threads, self)
+    @thread.run
+    ThreadsWait.all_waits(@threads)
   end
-
-
-
 end
 
 class String

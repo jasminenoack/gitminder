@@ -1,10 +1,10 @@
 module Intro
 
   def intro_prompt
-    @user1 = new_user("navigator")
-    @user2 = new_user("driver")
+    @user_1 = new_user("navigator")
+    @user_2 = new_user("driver")
     @switch_timer = switch_timer_prompt
-    @navigator, @driver = @user1, @user2
+    @navigator, @driver = @user_1, @user_2
   end
 
   def new_user(role)
@@ -117,5 +117,5 @@ module Intro
       return confirmation.downcase =~ /(y+e?s?|^$)/
     end
   end
-  
+
 end
