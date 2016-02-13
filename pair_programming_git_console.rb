@@ -4,6 +4,7 @@ require_relative 'intro'
 require 'thwait'
 require_relative 'ppgthread'
 require 'io/console'
+require 'byebug'
 
 class PairProgrammingGitConsole
 
@@ -12,11 +13,19 @@ class PairProgrammingGitConsole
   attr_accessor :thread, :switch_timer, :navigator, :driver, :needs_nav_change
 
   def initialize()
+    git_init
     intro_prompt
     @threads = []
+    @switch_timer = 1
+    @user_1 = User.new({name: 'name', email: 'email', repo: 'https://github.com/Coroecram/gitminder.git', role: 'navigator'})
+    @user_2 = User.new({name: 'name', email: 'email', repo: 'https://github.com/Coroecram/gitminder.git', role: 'driver'})
     @thread = PPGThread.new(@switch_timer, @user_1, @user_2, @threads, self)
     @thread.run
     ThreadsWait.all_waits(@threads)
+  end
+
+  def git_init
+    `git init` if !(File.directory?('.git'))
   end
 end
 

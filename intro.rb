@@ -8,12 +8,12 @@ module Intro
   end
 
   def new_user(role)
-      name = name_prompt(role)
-      email = email_prompt(role)
-      repo = repo_prompt(role)
-      info = {name: name, email: email, repo: repo, role: role}
+    name = name_prompt(role)
+    email = email_prompt(role)
+    repo = repo_prompt(role)
+    info = {name: name, email: email, repo: repo, role: role}
 
-      confirm_user_info?(info) ? User.new(info) : new_user(role)
+    confirm_user_info?(info) ? User.new(info) : new_user(role)
   end
 
   def name_prompt(role)
@@ -28,12 +28,12 @@ module Intro
   end
 
   def email_prompt(role)
-      puts "\nWhat is the #{role}'s email?"
-      email = gets.chomp
-      raise DuplicateError, "**Driver and Navigator cannot have the same email!**" if @user1 && @user1.email == email
-      raise FormatError, "**Please enter a valid email address**" unless email =~ /\A[^@\s]+@([^@\s]+\.)+[^@\s]+\z/
+    puts "\nWhat is the #{role}'s email?"
+    email = gets.chomp
+    raise DuplicateError, "**Driver and Navigator cannot have the same email!**" if @user1 && @user1.email == email
+    raise FormatError, "**Please enter a valid email address**" unless email =~ /\A[^@\s]+@([^@\s]+\.)+[^@\s]+\z/
 
-      email
+    email
     rescue ArgumentError => e
       puts e.message
       retry
