@@ -17,6 +17,7 @@ class PairProgrammingGitConsole
   def initialize()
     git_init
     intro_prompt
+    create_remotes
     @threads = []
     @switch_timer = 1
     @user_1 = User.new({name: 'name', email: 'email', repo: 'https://github.com/Coroecram/test.git', role: 'navigator', identifier: 1})
@@ -28,6 +29,11 @@ class PairProgrammingGitConsole
 
   def git_init
     `git init` if !(File.directory?('.git'))
+  end
+
+  def create_remotes
+    `git remote add first_partner #{@user_1.repo}`
+    `git remote add second_partner #{@user_2.repo}`    
   end
 end
 
