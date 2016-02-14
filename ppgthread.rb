@@ -39,8 +39,12 @@ class PPGThread
         puts ""
         puts "ppg switch"
         puts "    switches the navigator, and user of record"
+        puts ""
+        puts "ppg modify -attribute -role new-value"
+        puts "     change email, name or repo attribute of a user"
+        puts "     ppg modify -email -driver for@example.com"
         puts "ppg set-time"
-        puts "    gits off the timer change script"
+        puts "     change switch timer"
         puts "ppg pause"
         puts "    pauses the timer"
         puts "ppg unpause"
@@ -116,6 +120,8 @@ class PPGThread
                 reset_time
             elsif input == 'ppg switch'
                 switch_roles
+            elsif input.start_with?('ppg modify')
+              modify_user(input)
             elsif input == 'ppg pause'
                 pause
             elsif input == 'ppg unpause'
@@ -187,15 +193,26 @@ class PPGThread
          end
     end
 
-    def modify_user(identifier, attr, value)
-      if attr == 'email'
+    def modify_user(input)
+      parsed_input = input.split(" ").drop(2)
+      raise FormatError, "Please enter a valid ppg modify -attribute -role new-value" if parsed_input.length < 3
+      attr = parsed_input.shift
+      raise FormatError, "Please enter a valid attribute" if !(attr =~ /\A-(name|email|repo)\z/)
+      if attr == '-email'
         raise FormatError, "Please enter a valid email address" if !(User.valid_email?(value))
-      elsif attr == 'repo'
+      elsif attr == '-repo'
         raise FormatError, "Please enter a valid Github Repository address" if !(User.valid_repo?(value))
       end
 
-      user = (@navigator.identifier == identifier ? @navigator : @driver)
-      user.instance_variable_set("@#{attr}".to_sym, value)
+      role = parsed_input.shift
+      raise FormatError, "Please enter a valid role" if !(role =~ /\A-(navigator|driver)\z/)
+      value = parsed_input.join(" ")
+      raise NoInputError, "Please enter a new value" if !value
+
+      user = (role == '-navigator' ? @navigator : @driver)
+      user.instance_variable_set("@#{attr[1..-1]}".to_sym, value)
+    rescue StandardError => e
+      puts e.message
     end
 
     def commit(string)

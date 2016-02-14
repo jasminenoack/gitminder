@@ -40,10 +40,10 @@ module KeyPress
       @strings[@strings_index] << " "
       print " "
     when "\t"
-      # puts "T
+      # puts "T"
     when "\r"
       command = @strings[@strings_index]
-      if @strings[@strings_index].length > 0
+      if @strings[@strings_index].length > 0 && @strings_index == -1
           @strings << ""
       end
       if @strings.length > 100
@@ -56,14 +56,12 @@ module KeyPress
       # puts "LINE FEED"
     when "\e"
       # puts "ESCAPE"
-    when "\e[A"
-      return -@strings.length if @strings_index <= -@strings.length
+    when "\e[A" # UP ARROW
+      return if @strings_index <= -@strings.length
       @strings_index -= 1
-      print @strings[@strings_index]
-    when "\e[B"
-      return @strings_index if @strings_index == -1
+    when "\e[B" # DOWN ARROW
+      return if @strings_index == -1
       @strings_index += 1
-      print @strings[@strings_index]
     when "\e[C"
       # puts "RIGHT ARROW"
     when "\e[D"
