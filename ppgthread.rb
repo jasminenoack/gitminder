@@ -10,7 +10,18 @@ class PPGThread
         @strings = [""]
     end
 
+    def header_string
+        pwd = `pwd`.chomp
+        @user = `whoami`.chomp
+        @git_branch = `git rev-parse --abbrev-ref HEAD`.chomp
+        return "|-#{@user}:~#{pwd}(#{@git_branch})-|$ "
+    end
+
     def run
+        puts ""
+        puts "Enjoy GitMinder"
+        puts ""
+        print header_string
         @threads << Thread.new do
             @threads << Thread.new do
                 loop do
@@ -31,11 +42,12 @@ class PPGThread
             @threads << Thread.new do
                 loop do
                     if !@pairing_manager.needs_nav_change
-                        sleep @switch_time
+                        sleep @switch_time * 60
                         @pairing_manager.needs_nav_change = true
                         print "\r"
-                        print "\nIt has been #{@switch_time/60} minutes.  Please change the navigator\n"
+                        print "\nIt has been #{@switch_time} minutes.  Please change the navigator\n"
                         print "\r"
+                        print header_string
                         print @strings[-1]
                     end
                 end
@@ -68,7 +80,7 @@ class PPGThread
         @strings[-1] << " "
         print " "
       when "\t"
-        puts "TAB"
+        # puts "TAB"
       when "\r"
         if @strings[-1].length > 0
             @strings << ""
@@ -77,25 +89,31 @@ class PPGThread
             @strings = @strings.drop(@strings.length - 100)
         end
         puts ""
+        print header_string
         return @strings[-2]
       when "\n"
-        puts "LINE FEED"
+        # puts "LINE FEED"
       when "\e"
-        puts "ESCAPE"
+        # puts "ESCAPE"
       when "\e[A"
-        puts "UP ARROW"
+        # puts "UP ARROW"
       when "\e[B"
-        puts "DOWN ARROW"
+        # puts "DOWN ARROW"
       when "\e[C"
-        puts "RIGHT ARROW"
+        # puts "RIGHT ARROW"
       when "\e[D"
-        puts "LEFT ARROW"
+        # puts "LEFT ARROW"
       when "\177"
-        puts "BACKSPACE"
+        print "\r"
+        print " " * (header_string.length + @strings[-1].length)
+        print "\r"
+        print header_string
+        @strings[-1] = @strings[-1][0..-2]
+        print @strings[-1]
       when "\004"
-        puts "DELETE"
+        # puts "DELETE"
       when "\e[3~"
-        puts "ALTERNATE DELETE"
+        # puts "ALTERNATE DELETE"
       when "\u0003"
         exit 0
       when /^.$/
@@ -105,6 +123,16 @@ class PPGThread
     end
 
     def process(input)
-        puts "General input #{input}"
+        if input.strip.start_with?('ppg')
+            puts "ppg string #{input}"
+        else
+            output = `#{input}`
+            puts output
+        end
+        p @strings
+        print header_string
+        rescue => boom
+            puts boom
+        print header_string
     end
 end
