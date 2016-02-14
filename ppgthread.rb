@@ -1,4 +1,5 @@
 require 'io/console'
+require 'byebug'
 
 class PPGThread
     def initialize(switch_time, user_1, user_2, threads, pairing_manager)
@@ -124,7 +125,14 @@ class PPGThread
 
     def process(input)
         if input.strip.start_with?('ppg')
-            puts "ppg string #{input}"
+            if input.start_with?('ppg commit')
+                string = "#{input.gsub('ppg', 'git')}"
+                puts string
+                output = `#{string}`
+                puts output
+            else
+                puts "not a ppg string #{input}"
+            end
         else
             output = `#{input}`
             puts output
