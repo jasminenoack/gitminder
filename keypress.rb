@@ -9,7 +9,10 @@ module KeyPress
       if @paused
         next_switch_time = "paused:#{@paused.floor}"
       else
-        next_switch_time = "#{(@next_switch_time - Time.now).floor}"
+        timeleft = (@next_switch_time - Time.now).round
+        seconds_left = timeleft % 60
+        seconds_left = (seconds_left < 10 ? "0#{seconds_left}" : seconds_left)
+        next_switch_time = "#{timeleft / 60}:#{seconds_left}"
       end
       return "|-#{@navigator.name}:~#{pwd}(#{@git_branch}) #{next_switch_time} -|$ "
   end
@@ -52,7 +55,7 @@ module KeyPress
       print header_string
       print @strings[@strings_index][0..@right_index]
     when "\t"
-      # puts "T
+      # puts "T"
     when "\r"
       @right_index = -1
       command = @strings[@strings_index]
@@ -86,7 +89,6 @@ module KeyPress
       clear_lines
       print header_string
       @strings_index += 1
-      print @strings[@strings_index]
     when "\e[C"
       @right_index += 1
       @right_index = -1 if @right_index > -1
@@ -122,7 +124,7 @@ module KeyPress
       # puts "ALTERNATE DELETE"
     when "\u0003"
       exit 0
-    when /^.$/ 
+    when /^.$/
       if @strings[@strings_index].length == 0 || @right_index == -1
         @strings[@strings_index]  << c
       else

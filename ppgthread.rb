@@ -19,7 +19,7 @@ class PPGThread
         @strings       = [""]
         @strings_index = -1
         set_time
-        @responding = false
+        @responding  = false
         @last_commit = Time.now
         @right_index = -1
         @last_keypress = Time.now
@@ -35,14 +35,17 @@ class PPGThread
         puts ""
         puts ""
         puts ""
-        puts "Enjoy PairProgrammingGit"
+        puts "Enjoy Pair Programming Git"
         puts ""
         puts "EXTRA COMMANDS:"
         puts ""
         puts "ppg switch"
         puts "    switches the navigator, and user of record"
+        puts "ppg modify -attribute -role new-value"
+        puts "     change email, name or repo attribute of a user"
+        puts "     ppg modify -email -driver for@example.com"
         puts "ppg set-time"
-        puts "    gits off the timer change script"
+        puts "     change switch timer"
         puts "ppg pause"
         puts "    pauses the timer"
         puts "ppg unpause"
@@ -129,13 +132,15 @@ class PPGThread
         output = ""
         if input.strip.start_with?('ppg')
             if input == 'ppg set-time'
-                reset_time
+              reset_time
             elsif input == 'ppg switch'
-                switch_roles
+              switch_roles
+            elsif input.start_with?('ppg modify')
+              modify_user(input)
             elsif input == 'ppg pause'
-                pause
+              pause
             elsif input == 'ppg unpause'
-                unpause
+              ppgunpause
             else
                 string = "#{input.gsub('ppg', 'git')}"
                 puts(string)
@@ -203,15 +208,26 @@ class PPGThread
          end
     end
 
-    def modify_user(identifier, attr, value)
-      if attr == 'email'
+    def modify_user(input)
+      parsed_input = input.split(" ").drop(2)
+      raise FormatError, "Please enter a valid command 'ppg modify -attribute -role new-value'" if parsed_input.length < 3
+      attr = parsed_input.shift
+      raise FormatError, "Please enter a valid attribute (-name/-email/-repo)" if !(attr =~ /\A-(name|email|repo)\z/)
+      role = parsed_input.shift
+      raise FormatError, "Please enter a valid role (-navigator/-driver)" if !(role =~ /\A-(navigator|driver)\z/)
+      value = parsed_input.join(" ")
+      raise NoInputError, "Please enter a new value" if !value
+
+      if attr == '-email'
         raise FormatError, "Please enter a valid email address" if !(User.valid_email?(value))
-      elsif attr == 'repo'
+      elsif attr == '-repo'
         raise FormatError, "Please enter a valid Github Repository address" if !(User.valid_repo?(value))
       end
 
-      user = (@navigator.identifier == identifier ? @navigator : @driver)
-      user.instance_variable_set("@#{attr}".to_sym, value)
+      user = (role == '-navigator' ? @navigator : @driver)
+      user.instance_variable_set("@#{attr[1..-1]}".to_sym, value)
+    rescue StandardError => e
+      puts e.message
     end
 
     def commit(string)
