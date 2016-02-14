@@ -30,7 +30,7 @@ module Intro
   def email_prompt(role)
     puts "\nWhat is the #{role}'s email?"
     email = gets.chomp
-    raise DuplicateError, "**Driver and Navigator cannot have the same email!**" if @user1 && @user1.email == email
+    raise DuplicateError, "**Driver and Navigator cannot have the same email!**" if @user_1 && @user_1.email == email
     raise FormatError, "**Please enter a valid email address**" unless email =~ /\A[^@\s]+@([^@\s]+\.)+[^@\s]+\z/
 
     email
@@ -40,10 +40,10 @@ module Intro
   end
 
   def repo_prompt(role)
-    puts "What is the #{role}'s git repository url?"
+    puts "\nWhat is the #{role}'s git repository url?"
     repo = gets.chomp
-    raise DuplicateError, "**Driver and Navigator cannot have the same repo!**" if @user1 && @user1.repo == repo
-    raise FormatError, "Please enter a valid Github Repository address" unless repo =~ /https:\/\/github.com\/\w+\/\w+\.git/
+    raise DuplicateError, "**Driver and Navigator cannot have the same repo!**" if @user_1 && @user_1.repo == repo
+    raise FormatError, "Please enter a valid Github Repository address" if !(repo =~ /https:\/\/github.com\/\w+\/\w+\.git/)
 
     repo
     rescue ArgumentError => e
@@ -67,7 +67,7 @@ module Intro
   def switch_timer_prompt
     puts 'Switch every 15 minutes? (press enter or enter different number)'
     switch_timer = gets.chomp
-    if switch_timer == ""
+    if switch_timer =~ /([yn]+[eo]?s?|^$)/)
       if timer_confirm?()
         15
       else
