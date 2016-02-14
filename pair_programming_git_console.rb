@@ -3,11 +3,13 @@ require_relative 'ppgthread'
 require_relative 'intro'
 require 'thwait'
 require_relative 'ppgthread'
+require_relative 'keypress'
 require 'io/console'
 
 class PairProgrammingGitConsole
 
   include Intro
+  include KeyPress
 
   attr_accessor :thread, :switch_timer, :navigator, :driver, :needs_nav_change
 

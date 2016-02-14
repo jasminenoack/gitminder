@@ -1,6 +1,6 @@
 class User
 
-attr_accessor :name, :email, :repo, :role 
+attr_accessor :name, :email, :repo, :role
 
   def initialize(options)
     @name = options[:name]
