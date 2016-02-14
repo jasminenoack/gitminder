@@ -129,7 +129,6 @@ class PPGThread
             output = `#{input}`
             puts output
         end
-        p @strings
         print header_string
         rescue => boom
             puts boom
