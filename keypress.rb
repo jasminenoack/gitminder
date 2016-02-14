@@ -50,14 +50,14 @@ module KeyPress
           @strings = @strings.drop(@strings.length - 100) # .shift?
       end
       puts ""
-      @strings_index = @strings_index
+      @strings_index = -1
       return command
     when "\n"
       # puts "LINE FEED"
     when "\e"
       # puts "ESCAPE"
     when "\e[A"
-      return -(@strings.length) if @strings_index <= -(@strings.length)
+      return -@strings.length if @strings_index <= -@strings.length
       @strings_index -= 1
       print @strings[@strings_index]
     when "\e[B"
