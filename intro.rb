@@ -3,10 +3,10 @@ module Intro
   def intro_prompt
     @strings       = [""]
     @strings_index = -1
-    @user_1        = new_user("navigator", 1)
-    @user_2        = new_user("driver", 2)
+    @right_index   = -1
+    @navigator     = new_user("navigator", 1)
+    @driver        = new_user("driver", 2)
     @switch_timer  = switch_timer_prompt
-    @navigator, @driver = @user_1, @user_2
   end
 
   def new_user(role, identifier)
@@ -32,8 +32,7 @@ module Intro
   def email_prompt(role)
     puts "\nWhat is the #{role}'s email?"
     email = input_prompt
-    debugger
-    raise DuplicateError, "Driver and Navigator cannot have the same email!" if @user_1 && @user_1.email == email
+    raise DuplicateError, "Driver and Navigator cannot have the same email!" if @navigator && @navigator.email == email
     raise FormatError, "Please enter a valid email address" if !(User.valid_email?(email))
 
     email
@@ -45,7 +44,7 @@ module Intro
   def repo_prompt(role)
     puts "\nWhat is the #{role}'s git repository url?"
     repo = input_prompt
-    raise DuplicateError, "Driver and Navigator cannot have the same repo!" if @user_1 && @user_1.repo == repo
+    raise DuplicateError, "Driver and Navigator cannot have the same repo!" if @navigator && @navigator.repo == repo
     raise FormatError, "Please enter a valid Github Repository address" if !(User.valid_repo?(repo))
 
     repo
@@ -113,7 +112,6 @@ module Intro
 
   def confirm_prompt
     confirmation = input_prompt
-
     if !(confirmation.downcase =~ /([yn]+[eo]?s?|^$)/)
       raise InputError, "Enter y or n"
     else

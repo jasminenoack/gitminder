@@ -1,18 +1,22 @@
 require 'date'
-require 'byebug'
 
 module KeyPress
 
   def header_string
+      return "" if self.class == PairProgrammingGitConsole
       pwd = `pwd`.chomp
       @git_branch = `git rev-parse --abbrev-ref HEAD`.chomp
       if @paused
         next_switch_time = "paused:#{@paused.floor}"
       else
         timeleft = (@next_switch_time - Time.now).round
-        seconds_left = timeleft % 60
-        seconds_left = (seconds_left < 10 ? "0#{seconds_left}" : seconds_left)
-        next_switch_time = "#{timeleft / 60}:#{seconds_left}"
+        unless timeleft < 0
+          seconds_left = timeleft % 60
+          seconds_left = (seconds_left < 10 ? "0#{seconds_left}" : seconds_left)
+          next_switch_time = "#{timeleft / 60}:#{seconds_left}"
+        else
+          next_switch_time = "switch"
+        end
       end
       return "|-#{@navigator.name}:~#{pwd}(#{@git_branch}) #{next_switch_time} -|$ "
   end
@@ -140,11 +144,17 @@ module KeyPress
     end
   end
 
+  def clear_lines
+      print "\b" * ((header_string + @strings[@strings_index]).length)
+      print "\r"
+  end
+
   def input_prompt
     length = @strings.length
-    until @strings.length == length + 1
-      handle_key_press
+    key_press = nil
+    until key_press
+      key_press = handle_key_press
     end
-    @strings[@strings_index - 1]
+    key_press
   end
 end

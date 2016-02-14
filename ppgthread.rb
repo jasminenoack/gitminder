@@ -2,9 +2,7 @@ require_relative 'keypress'
 require_relative 'custom_errors'
 require_relative 'user'
 require 'io/console'
-require 'byebug'
 require 'date'
-
 
 class PPGThread
   include KeyPress
@@ -246,8 +244,4 @@ class PPGThread
         return output
     end
 
-    def clear_lines
-        print "\b" * ((header_string + @strings[@strings_index]).length)
-        print "\r"
-    end
 end

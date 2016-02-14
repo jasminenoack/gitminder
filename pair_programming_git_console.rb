@@ -7,7 +7,6 @@ require_relative 'keypress'
 require 'thwait'
 require 'stringio'
 require 'io/console'
-require 'byebug'
 
 class PairProgrammingGitConsole
 
@@ -17,13 +16,13 @@ class PairProgrammingGitConsole
   attr_accessor :thread, :switch_timer, :navigator, :driver
 
   def initialize()
-    # git_init
-    # intro_prompt
-    # create_remotes
+    @navigator
+    @driver
+    git_init
+    intro_prompt
+    create_remotes
     @threads       = []
     @switch_timer  = 15
-    @navigator     = User.new({name: 'name', email: 'email', repo: 'https://github.com/Coroecram/test.git', role: 'navigator', identifier: 1})
-    @driver        = User.new({name: 'name', email: 'email', repo: 'https://github.com/Coroecram/test.git', role: 'driver', identifier: 2})
     @thread        = PPGThread.new(@switch_timer, @navigator, @driver, @threads, self)
     @thread.run
     ThreadsWait.all_waits(@threads)
