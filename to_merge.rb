@@ -8,6 +8,14 @@ def modify_user(identifier, attr, value)
     raise FormatError, "Please enter a valid Github Repository address" if !(User.valid_repo?(value))
   end
 
-  user = (identifier == 1 ? @user_1 : @user_2)
+  user = (@navigator.identifier == identifier ? @navigator : @driver)
   user.instance_variable_set("@#{attr}".to_sym, value)
+end
+
+
+def switch_roles
+  @navigator, @driver = @driver, @navigator
+
+  `git config user.name #{@navigator.name}`
+  `git config user.email #{@navigator.email}`
 end

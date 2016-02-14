@@ -2,10 +2,11 @@ require 'io/console'
 require_relative 'custom_errors'
 
 class PPGThread
-    def initialize(switch_time, user_1, user_2, threads, pairing_manager)
+    def initialize(switch_time, navigator, driver, threads, pairing_manager)
         @switch_time = switch_time
-        @user_1 = user_1
-        @user_2 = user_2
+        @navigator = driver
+        @driver = navigator
+        switch_roles #switch roles to run git config...
         @threads = threads
         @pairing_manager = pairing_manager
         @strings = [""]

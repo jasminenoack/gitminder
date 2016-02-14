@@ -22,7 +22,7 @@ class PairProgrammingGitConsole
     @switch_timer = 1
     @user_1 = User.new({name: 'name', email: 'email', repo: 'https://github.com/Coroecram/test.git', role: 'navigator', identifier: 1})
     @user_2 = User.new({name: 'name', email: 'email', repo: 'https://github.com/Coroecram/test.git', role: 'driver', identifier: 2})
-    @thread = PPGThread.new(@switch_timer, @user_1, @user_2, @threads, self)
+    @thread = PPGThread.new(@switch_timer, @navigator, @driver, @threads, self)
     @thread.run
     ThreadsWait.all_waits(@threads)
   end
@@ -33,7 +33,7 @@ class PairProgrammingGitConsole
 
   def create_remotes
     `git remote add first_partner #{@user_1.repo}`
-    `git remote add second_partner #{@user_2.repo}`    
+    `git remote add second_partner #{@user_2.repo}`
   end
 end
 
