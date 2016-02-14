@@ -127,6 +127,12 @@ class PPGThread
         if input.strip.start_with?('ppg')
             if input.start_with?('ppg commit')
                 string = "#{input.gsub('ppg', 'git')}"
+                unless input.include?('-m')
+                    print header_string
+                    puts "Please enter a commit message:"
+                    message = gets.chomp
+                    string += " -m #{message}"
+                end
                 puts string
                 output = `#{string}`
                 puts output
@@ -135,7 +141,9 @@ class PPGThread
             end
         else
             output = `#{input}`
-            puts output
+            if output.length > 0
+                puts output
+            end
         end
         print header_string
         rescue => boom
