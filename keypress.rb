@@ -50,7 +50,7 @@ module KeyPress
           @strings = @strings.drop(@strings.length - 100) # .shift?
       end
       puts ""
-      @strings_index = @strings_index
+      @strings_index = -1
       return command
     when "\n"
       # puts "LINE FEED"

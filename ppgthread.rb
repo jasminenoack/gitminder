@@ -17,7 +17,7 @@ class PPGThread
         switch_roles #switch roles to run git config...
         @threads = threads
         @strings = [""]
-        @strings_index = @strings_index
+        @strings_index = -1
         set_time
         @responding = false
         @last_commit = Time.now
