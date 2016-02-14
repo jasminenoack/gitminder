@@ -37,39 +37,44 @@ module KeyPress
     end
     case c
     when " "
-      @strings[-1] << " "
+      @strings[@strings_index] << " "
       print " "
     when "\t"
       # puts "T
     when "\r"
-      command = @strings[-1]
-      if @strings[-1].length > 0
+      command = @strings[@strings_index]
+      if @strings[@strings_index].length > 0
           @strings << ""
       end
       if @strings.length > 100
-          @strings = @strings.drop(@strings.length - 100)
+          @strings = @strings.drop(@strings.length - 100) # .shift?
       end
       puts ""
+      @strings_index = @strings_index
       return command
     when "\n"
       # puts "LINE FEED"
     when "\e"
       # puts "ESCAPE"
     when "\e[A"
-      # puts "UP ARROW"
+      return -(@strings.length) if @strings_index <= -(@strings.length)
+      @strings_index -= 1
+      print @strings[@strings_index]
     when "\e[B"
-      # puts "DOWN ARROW"
+      return @strings_index if @strings_index == -1
+      @strings_index += 1
+      print @strings[@strings_index]
     when "\e[C"
       # puts "RIGHT ARROW"
     when "\e[D"
       # puts "LEFT ARROW"
     when "\177"
       print "\r"
-      print " " * (header_string.length + @strings[-1].length)
+      print " " * (header_string.length + @strings[@strings_index].length)
       print "\r"
       print header_string
-      @strings[-1] = @strings[-1][0..-2]
-      print @strings[-1]
+      @strings[@strings_index] = @strings[@strings_index][0..-2]
+      print @strings[@strings_index]
     when "\004"
       # puts "DELETE"
     when "\e[3~"
@@ -77,7 +82,7 @@ module KeyPress
     when "\u0003"
       exit 0
     when /^.$/
-      @strings[-1] << c
+      @strings[@strings_index] << c
       print c
     end
   end
@@ -87,5 +92,6 @@ module KeyPress
     until @strings.length == length + 1
       handle_key_press
     end
+    @strings[@strings_index - 1]
   end
 end

@@ -17,6 +17,7 @@ class PPGThread
         switch_roles #switch roles to run git config...
         @threads = threads
         @strings = [""]
+        @strings_index = @strings_index
         set_time
         @responding = false
         @last_commit = Time.now
@@ -32,7 +33,7 @@ class PPGThread
         puts ""
         puts ""
         puts ""
-        puts "Enjoy GitMinder"
+        puts "Enjoy PairProgrammingGit"
         puts ""
         puts "EXTRA COMMANDS:"
         puts ""
@@ -53,9 +54,9 @@ class PPGThread
                     next
                 end
                 if @next_switch_time < Time.now
-                    if @strings[-1].length < 1
+                    if @strings[@strings_index].length < 1
                         print "\r"
-                        print " " * (header_string.length + @strings[-1].length)
+                        print " " * (header_string.length + @strings[@strings_index].length)
                         print "\r"
                         puts ""
                         puts "It has been #{@switch_time} minutes.  Please change the navigator".upcase
@@ -64,7 +65,7 @@ class PPGThread
                         puts ""
                         puts "\nIt has been #{@switch_time} minutes.  Please change the navigator".upcase
                         print header_string
-                        print @strings[-1]
+                        print @strings[@strings_index]
                     end
                 end
                 string = handle_key_press
@@ -81,16 +82,16 @@ class PPGThread
                     next
                 end
                 print "\r"
-                print " " * (header_string.length + @strings[-1].length) + " "
+                print " " * (header_string.length + @strings[@strings_index].length) + " "
                 print "\r"
-                print header_string + @strings[-1]
+                print header_string + @strings[@strings_index]
                 if (@next_switch_time - Time.now).floor == 0
                     print "\r"
                     puts ""
                     print "\nIt has been #{@switch_time} minutes.  Please change the navigator\n".upcase
                     print "\r"
                     print header_string
-                    print @strings[-1]
+                    print @strings[@strings_index]
                 end
                 if Time.now - @last_commit > 5 * 60 && !@commit_alerted
                     @commit_alerted = true
@@ -99,7 +100,7 @@ class PPGThread
                     print "\nIt has been 5 minutes consider committing\n".upcase
                     print "\r"
                     print header_string
-                    print @strings[-1]
+                    print @strings[@strings_index]
                     sleep 10
                 end
                 sleep 1

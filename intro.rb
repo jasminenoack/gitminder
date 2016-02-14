@@ -1,10 +1,11 @@
 module Intro
 
   def intro_prompt
-    @strings      = [""]
-    @user_1       = new_user("navigator", 1)
-    @user_2       = new_user("driver", 2)
-    @switch_timer = switch_timer_prompt
+    @strings       = [""]
+    @strings_index = -1
+    @user_1        = new_user("navigator", 1)
+    @user_2        = new_user("driver", 2)
+    @switch_timer  = switch_timer_prompt
     @navigator, @driver = @user_1, @user_2
   end
 
@@ -31,6 +32,7 @@ module Intro
   def email_prompt(role)
     puts "\nWhat is the #{role}'s email?"
     email = input_prompt
+    debugger
     raise DuplicateError, "Driver and Navigator cannot have the same email!" if @user_1 && @user_1.email == email
     raise FormatError, "Please enter a valid email address" if !(User.valid_email?(email))
 

@@ -17,14 +17,14 @@ class PairProgrammingGitConsole
   attr_accessor :thread, :switch_timer, :navigator, :driver
 
   def initialize()
-    git_init
-    intro_prompt
-    create_remotes
-    @threads = []
-    @switch_timer = 15
-    @user_1 = User.new({name: 'name', email: 'email', repo: 'https://github.com/Coroecram/test.git', role: 'navigator', identifier: 1})
-    @user_2 = User.new({name: 'name', email: 'email', repo: 'https://github.com/Coroecram/test.git', role: 'driver', identifier: 2})
-    @thread = PPGThread.new(@switch_timer, @navigator, @driver, @threads, self)
+    # git_init
+    # intro_prompt
+    # create_remotes
+    @threads       = []
+    @switch_timer  = 15
+    @navigator     = User.new({name: 'name', email: 'email', repo: 'https://github.com/Coroecram/test.git', role: 'navigator', identifier: 1})
+    @driver        = User.new({name: 'name', email: 'email', repo: 'https://github.com/Coroecram/test.git', role: 'driver', identifier: 2})
+    @thread        = PPGThread.new(@switch_timer, @navigator, @driver, @threads, self)
     @thread.run
     ThreadsWait.all_waits(@threads)
   end
@@ -40,8 +40,8 @@ class PairProgrammingGitConsole
     elsif remotes.include?('second_partner')
       `git remote remove second_partner`
     end
-    `git remote add first_partner #{@user_1.repo}`
-    `git remote add second_partner #{@user_2.repo}`
+    `git remote add first_partner #{@navigator.repo}`
+    `git remote add second_partner #{@driver.repo}`
   end
 end
 
