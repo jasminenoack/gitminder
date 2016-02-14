@@ -43,7 +43,7 @@ module KeyPress
       # puts "T
     when "\r"
       command = @strings[@strings_index]
-      if @strings[@strings_index].length > 0
+      if @strings[@strings_index].length > 0 && @strings_index == -1
           @strings << ""
       end
       if @strings.length > 100
@@ -57,11 +57,19 @@ module KeyPress
     when "\e"
       # puts "ESCAPE"
     when "\e[A"
-      return -@strings.length if @strings_index <= -@strings.length
+      return if @strings_index <= -(@strings.length)
+      print "\r"
+      print " " * (header_string.length + @strings[@strings_index].length) + " "
+      print "\r"
+      print header_string
       @strings_index -= 1
       print @strings[@strings_index]
     when "\e[B"
-      return @strings_index if @strings_index == -1
+      return if @strings_index == -1
+      print "\r"
+      print " " * (header_string.length + @strings[@strings_index].length) + " "
+      print "\r"
+      print header_string
       @strings_index += 1
       print @strings[@strings_index]
     when "\e[C"
@@ -74,6 +82,7 @@ module KeyPress
       print "\r"
       print header_string
       @strings[@strings_index] = @strings[@strings_index][0..-2]
+      @strings[-1] = ""
       print @strings[@strings_index]
     when "\004"
       # puts "DELETE"
