@@ -98,6 +98,7 @@ module KeyPress
       print header_string
       print @strings[@strings_index][0..@right_index]
     when "\177"
+      puts ""
       clear_lines
       print header_string
       if @strings[@strings_index].length == 0 || @right_index == -1

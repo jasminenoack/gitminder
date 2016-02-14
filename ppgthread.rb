@@ -229,6 +229,6 @@ class PPGThread
         print "\r"
         print " " * `tput cols`.to_i
         print "\r"
-        ((header_string + @strings[@strings_index]).length / `tput cols`.to_i).times { |i| print "\e[A\e[K" unless i == 0}
+        ((header_string + @strings[@strings_index]).length / `tput cols`.to_i).times { |i| print "\e[A\e[K" }
     end
 end
