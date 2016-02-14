@@ -1,21 +1,20 @@
+require_relative 'keypress'
+require_relative 'custom_errors'
+require_relative 'user'
 require 'io/console'
 require 'byebug'
 
 class PPGThread
-    def initialize(switch_time, user_1, user_2, threads, pairing_manager)
+  include KeyPress
+
+    def initialize(switch_time, navigator, driver, threads, pairing_manager)
         @switch_time = switch_time
-        @user_1 = user_1
-        @user_2 = user_2
+        @navigator = driver
+        @driver = navigator
+        switch_roles #switch roles to run git config...
         @threads = threads
         @pairing_manager = pairing_manager
         @strings = [""]
-    end
-
-    def header_string
-        pwd = `pwd`.chomp
-        @user = `whoami`.chomp
-        @git_branch = `git rev-parse --abbrev-ref HEAD`.chomp
-        return "|-#{@user}:~#{pwd}(#{@git_branch})-|$ "
     end
 
     def run
@@ -58,75 +57,6 @@ class PPGThread
         @threads.each {|thread| thread.abort_on_exception = true}
     end
 
-    def read_char
-      STDIN.echo = false
-      STDIN.raw!
-
-      input = STDIN.getc.chr
-      if input == "\e" then
-        input << STDIN.read_nonblock(3) rescue nil
-        input << STDIN.read_nonblock(2) rescue nil
-      end
-    ensure
-      STDIN.echo = true
-      STDIN.cooked!
-
-      return input
-    end
-
-    def handle_key_press
-      c = read_char
-      if @getting_response
-        return
-      end
-      case c
-      when " "
-        @strings[-1] << " "
-        print " "
-      when "\t"
-        # puts "TAB"
-      when "\r"
-        command = @strings[-1]
-        if @strings[-1].length > 0
-            @strings << ""
-        end
-        if @strings.length > 100
-            @strings = @strings.drop(@strings.length - 100)
-        end
-        puts ""
-        print header_string
-        return command
-      when "\n"
-        # puts "LINE FEED"
-      when "\e"
-        # puts "ESCAPE"
-      when "\e[A"
-        # puts "UP ARROW"
-      when "\e[B"
-        # puts "DOWN ARROW"
-      when "\e[C"
-        # puts "RIGHT ARROW"
-      when "\e[D"
-        # puts "LEFT ARROW"
-      when "\177"
-        print "\r"
-        print " " * (header_string.length + @strings[-1].length)
-        print "\r"
-        print header_string
-        @strings[-1] = @strings[-1][0..-2]
-        print @strings[-1]
-      when "\004"
-        # puts "DELETE"
-      when "\e[3~"
-        # puts "ALTERNATE DELETE"
-      when "\u0003"
-        exit 0
-      when /^.$/
-        @strings[-1] << c
-        print c
-      end
-    end
-
     def process(input)
         if input.strip.start_with?('ppg')
             if input.start_with?('ppg commit')
@@ -152,6 +82,24 @@ class PPGThread
         rescue => boom
             puts boom
             print header_string
+    end
+
+    def switch_roles
+      @navigator, @driver = @driver, @navigator
+      @pairing_manager.needs_nav_change = false
+      `git config user.name #{@navigator.name}`
+      `git config user.email #{@navigator.email}`
+    end
+
+    def modify_user(identifier, attr, value)
+      if attr == 'email'
+        raise FormatError, "Please enter a valid email address" if !(User.valid_email?(value))
+      elsif attr == 'repo'
+        raise FormatError, "Please enter a valid Github Repository address" if !(User.valid_repo?(value))
+      end
+
+      user = (@navigator.identifier == identifier ? @navigator : @driver)
+      user.instance_variable_set("@#{attr}".to_sym, value)
     end
 
     def commit(string)

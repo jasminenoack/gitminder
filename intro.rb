@@ -1,25 +1,26 @@
 module Intro
 
   def intro_prompt
-    @user_1 = new_user("navigator")
-    @user_2 = new_user("driver")
+    @user_1 = new_user("navigator", 1)
+    @user_2 = new_user("driver", 2)
     @switch_timer = switch_timer_prompt
     @navigator, @driver = @user_1, @user_2
+    @strings = [""]
   end
 
-  def new_user(role)
-      name = name_prompt(role)
-      email = email_prompt(role)
-      repo = repo_prompt(role)
-      info = {name: name, email: email, repo: repo, role: role}
+  def new_user(role, identifier)
+    name = name_prompt(role)
+    email = email_prompt(role)
+    repo = repo_prompt(role)
+    info = {name: name, email: email, repo: repo, role: role, identifier: identifier}
 
-      confirm_user_info?(info) ? User.new(info) : new_user(role)
+    confirm_user_info?(info) ? User.new(info) : new_user(role)
   end
 
   def name_prompt(role)
     puts "\nWhat is the #{role}'s name?"
     name = gets.chomp
-    raise InputError, "**Please enter a name**" if name == ""
+    raise InputError, "Please enter a name" if name == ""
 
     name
     rescue ArgumentError => e
@@ -28,22 +29,22 @@ module Intro
   end
 
   def email_prompt(role)
-      puts "\nWhat is the #{role}'s email?"
-      email = gets.chomp
-      raise DuplicateError, "**Driver and Navigator cannot have the same email!**" if @user1 && @user1.email == email
-      raise FormatError, "**Please enter a valid email address**" unless email =~ /\A[^@\s]+@([^@\s]+\.)+[^@\s]+\z/
+    puts "\nWhat is the #{role}'s email?"
+    email = gets.chomp
+    raise DuplicateError, "Driver and Navigator cannot have the same email!" if @user_1 && @user_1.email == email
+    raise FormatError, "Please enter a valid email address" if !(User.valid_email?(email))
 
-      email
+    email
     rescue ArgumentError => e
       puts e.message
       retry
   end
 
   def repo_prompt(role)
-    puts "What is the #{role}'s git repository url?"
+    puts "\nWhat is the #{role}'s git repository url?"
     repo = gets.chomp
-    raise DuplicateError, "**Driver and Navigator cannot have the same repo!**" if @user1 && @user1.repo == repo
-    raise FormatError, "Please enter a valid Github Repository address" unless repo =~ /https:\/\/github.com\/\w+\/\w+\.git/
+    raise DuplicateError, "Driver and Navigator cannot have the same repo!" if @user_1 && @user_1.repo == repo
+    raise FormatError, "Please enter a valid Github Repository address" if !(User.valid_repo?(repo))
 
     repo
     rescue ArgumentError => e
@@ -67,7 +68,7 @@ module Intro
   def switch_timer_prompt
     puts 'Switch every 15 minutes? (press enter or enter different number)'
     switch_timer = gets.chomp
-    if switch_timer == ""
+    if switch_timer =~ /([yn]+[eo]?s?|^$)/
       if timer_confirm?()
         15
       else
