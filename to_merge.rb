@@ -3,7 +3,7 @@ require_relative 'custom_errors'
 
 def modify_user(identifier, attr, value)
   if attr == 'email'
-    raise FormatError if !(User.valid_email?(value))
+    raise FormatError, "Please enter a valid email address" if !(User.valid_email?(value))
   elsif attr == 'repo'
     raise FormatError, "Please enter a valid Github Repository address" if !(User.valid_repo?(value))
   end

@@ -67,7 +67,7 @@ module Intro
   def switch_timer_prompt
     puts 'Switch every 15 minutes? (press enter or enter different number)'
     switch_timer = gets.chomp
-    if switch_timer =~ /([yn]+[eo]?s?|^$)/)
+    if switch_timer =~ /([yn]+[eo]?s?|^$)/
       if timer_confirm?()
         15
       else

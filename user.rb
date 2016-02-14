@@ -18,8 +18,8 @@ attr_accessor :name, :email, :repo, :role, :identifier
     !!(repo =~ /https:\/\/github.com\/\w+\/\w+\.git/)
   end
 
-  def self.valid_email(email)
+  def self.valid_email?(email)
     !!(email =~ /\A[^@\s]+@([^@\s]+\.)+[^@\s]+\z/)
   end
-  
+
 end
