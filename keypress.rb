@@ -37,11 +37,22 @@ module KeyPress
     end
     case c
     when " "
-      @strings[@strings_index] << " "
-      print " "
+      if @strings[@strings_index].length == 0 || @right_index == -1
+        @strings[@strings_index]  << " "
+      else
+        split_index = @right_index + 1
+        @strings[@strings_index] = @strings[@strings_index][0...split_index] + " " + @strings[@strings_index][split_index..-1]
+      end
+      print "\r"
+      print header_string
+      print @strings[@strings_index]
+      print "\r"
+      print header_string
+      print @strings[@strings_index][0..@right_index]
     when "\t"
       # puts "T
     when "\r"
+      @right_index = -1
       command = @strings[@strings_index]
       if @strings[@strings_index].length > 0 && @strings_index == -1
           @strings << ""
@@ -57,6 +68,7 @@ module KeyPress
     when "\e"
       # puts "ESCAPE"
     when "\e[A"
+      @right_index = -1
       return if @strings_index <= -(@strings.length)
       print "\r"
       print " " * (header_string.length + @strings[@strings_index].length) + " "
@@ -65,6 +77,7 @@ module KeyPress
       @strings_index -= 1
       print @strings[@strings_index]
     when "\e[B"
+      @right_index = -1
       return if @strings_index == -1
       print "\r"
       print " " * (header_string.length + @strings[@strings_index].length) + " "
@@ -73,26 +86,53 @@ module KeyPress
       @strings_index += 1
       print @strings[@strings_index]
     when "\e[C"
-      # puts "RIGHT ARROW"
-    when "\e[D"
-      # puts "LEFT ARROW"
-    when "\177"
-      print "\r"
-      print " " * (header_string.length + @strings[@strings_index].length)
+      @right_index += 1
+      @right_index = -1 if @right_index > -1
       print "\r"
       print header_string
-      @strings[@strings_index] = @strings[@strings_index][0..-2]
-      @strings[-1] = ""
+      print @strings[@strings_index][0..@right_index]
+    when "\e[D"
+      @right_index -= 1
+      @right_index = -@strings[@strings_index].length if @right_index > @strings[@strings_index].length
+      print "\r"
+      print header_string
+      print @strings[@strings_index][0..@right_index]
+    when "\177"
+      print "\r"
+      print " " * (`tput cols`.to_i)
+      print "\r"
+      print header_string
+      if @strings[@strings_index].length == 0 || @right_index == -1
+        @strings[@strings_index] = @strings[@strings_index][0..-2]
+      else
+        split_index = @right_index + 1
+        @strings[@strings_index] = @strings[@strings_index][0...@right_index] + @strings[@strings_index][split_index..-1]
+      end
+      print "\r"
+      print header_string
       print @strings[@strings_index]
+      print "\r"
+      print header_string
+      print @strings[@strings_index][0..@right_index]
     when "\004"
       # puts "DELETE"
     when "\e[3~"
       # puts "ALTERNATE DELETE"
     when "\u0003"
       exit 0
-    when /^.$/
-      @strings[@strings_index] << c
-      print c
+    when /^.$/ 
+      if @strings[@strings_index].length == 0 || @right_index == -1
+        @strings[@strings_index]  << c
+      else
+        split_index = @right_index + 1
+        @strings[@strings_index] = @strings[@strings_index][0...split_index] + c + @strings[@strings_index][split_index..-1]
+      end
+      print "\r"
+      print header_string
+      print @strings[@strings_index]
+      print "\r"
+      print header_string
+      print @strings[@strings_index][0..@right_index]
     end
   end
 
