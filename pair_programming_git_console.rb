@@ -21,7 +21,7 @@ class PairProgrammingGitConsole
     intro_prompt
     create_remotes
     @threads = []
-    @switch_timer = 1
+    @switch_timer = 15
     @user_1 = User.new({name: 'name', email: 'email', repo: 'https://github.com/Coroecram/test.git', role: 'navigator', identifier: 1})
     @user_2 = User.new({name: 'name', email: 'email', repo: 'https://github.com/Coroecram/test.git', role: 'driver', identifier: 2})
     @thread = PPGThread.new(@switch_timer, @navigator, @driver, @threads, self)

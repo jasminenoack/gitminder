@@ -21,7 +21,7 @@ class PPGThread
 
     def set_time(delta=nil)
         delta = delta || @switch_time
-        @next_switch_time = Time.new + (delta * 60)
+        @next_switch_time = Time.now + (delta * 60)
     end
 
     def run
@@ -31,39 +31,40 @@ class PPGThread
         print header_string
         set_time
         @threads << Thread.new do
-            @threads << Thread.new do
-                loop do
-                    if @next_switch_time < Time.now
-                        if @strings[-1].length < 1
-                            print "\r"
-                            print " " * (header_string.length + @strings[-1].length)
-                            print "\r"
-                            puts "It has been #{@switch_time} minutes.  Please change the navigator"
-                            print header_string
-                        else
-                            puts "\nIt has been #{@switch_time} minutes.  Please change the navigator"
-                            print header_string
-                            print @strings[-1]
-                        end
-                    end
-                    string = handle_key_press
-                    if string
-                       process(string)
-                    end
-                end
-            end
-            @threads << Thread.new do
-                loop do
-                    if @next_switch_time < Time.now
-                        sleep @switch_time * 60
+            loop do
+                if @next_switch_time < Time.now
+                    if @strings[-1].length < 1
                         print "\r"
-                        print "\nIt has been #{@switch_time} minutes.  Please change the navigator\n"
+                        print " " * (header_string.length + @strings[-1].length)
                         print "\r"
+                        puts "It has been #{@switch_time} minutes.  Please change the navigator"
+                        print header_string
+                    else
+                        puts "\nIt has been #{@switch_time} minutes.  Please change the navigator"
                         print header_string
                         print @strings[-1]
-                        sleep 10
                     end
                 end
+                string = handle_key_press
+                if string
+                   process(string)
+                end
+            end
+        end
+        @threads << Thread.new do
+            loop do
+                print "\r"
+                print " " * (header_string.length + @strings[-1].length) + " "
+                print "\r"
+                print header_string + @strings[-1]
+                if (@next_switch_time - Time.now).floor == 0
+                    print "\r"
+                    print "\nIt has been #{@switch_time} minutes.  Please change the navigator\n"
+                    print "\r"
+                    print header_string
+                    print @strings[-1]
+                end
+                sleep 1
             end
         end
         @threads.each {|thread| thread.abort_on_exception = true}
