@@ -19,6 +19,7 @@ module KeyPress
     STDIN.raw!
 
     input = STDIN.getc.chr
+
     if input == "\e" then
       input << STDIN.read_nonblock(3) rescue nil
       input << STDIN.read_nonblock(2) rescue nil
@@ -32,6 +33,7 @@ module KeyPress
 
   def handle_key_press
     c = read_char
+    @last_keypress = Time.now
     if @responding
       return
     end
@@ -98,7 +100,8 @@ module KeyPress
       print header_string
       print @strings[@strings_index][0..@right_index]
     when "\177"
-      puts ""
+      print "\r"
+      print " " * ((header_string + @strings[@strings_index]).length)
       clear_lines
       print header_string
       if @strings[@strings_index].length == 0 || @right_index == -1

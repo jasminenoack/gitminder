@@ -22,6 +22,7 @@ class PPGThread
         @responding = false
         @last_commit = Time.now
         @right_index = -1
+        @last_keypress = Time.now
     end
 
     def set_time(delta=nil)
@@ -85,12 +86,14 @@ class PPGThread
                 if @responding
                     next
                 end
-                clear_lines
-                print header_string
-                print @strings[@strings_index]
-                clear_lines
-                print header_string
-                print @strings[@strings_index][0..@right_index]
+                if Time.now - @last_keypress > 5
+                    clear_lines
+                    print header_string
+                    print @strings[@strings_index]
+                    clear_lines
+                    print header_string
+                    print @strings[@strings_index][0..@right_index]
+                end
                 if (@next_switch_time - Time.now).floor == 0
                     clear_lines
                     puts ""
@@ -226,9 +229,6 @@ class PPGThread
     end
 
     def clear_lines
-        print "\r"
-        print " " * `tput cols`.to_i
-        print "\r"
-        ((header_string + @strings[@strings_index]).length / `tput cols`.to_i).times { |i| print "\e[A\e[K" }
+        print "\b" * ((header_string + @strings[@strings_index]).length)
     end
 end
