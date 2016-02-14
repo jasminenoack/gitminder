@@ -34,8 +34,14 @@ class PairProgrammingGitConsole
   end
 
   def create_remotes
-    `git remote add first_partner #{@user_1.repo}`
-    `git remote add second_partner #{@user_2.repo}`
+    begin
+      `git remote add first_partner #{@user_1.repo}`
+    rescue
+    end
+    begin
+      `git remote add second_partner #{@user_2.repo}`
+    rescue
+    end
   end
 end
 

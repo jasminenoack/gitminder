@@ -8,7 +8,7 @@ module KeyPress
       @user = `whoami`.chomp
       @git_branch = `git rev-parse --abbrev-ref HEAD`.chomp
       next_switch = ((@next_switch_time - Time.new) / 60).floor
-      return "|-#{@user}:~#{pwd}(#{@git_branch})\n{#{@navigator.name}:#{next_switch} minutes left}-|$ "
+      return "|-#{@user}:~#{pwd}(#{@git_branch}){#{@navigator.name}:#{next_switch} minutes left}-|$ "
   end
 
   def read_char
