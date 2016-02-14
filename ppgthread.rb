@@ -34,7 +34,7 @@ class PPGThread
         puts ""
         puts ""
         puts ""
-        puts "Enjoy PairProgrammingGit"
+        puts "Enjoy Pair Programming Git"
         puts ""
         puts "EXTRA COMMANDS:"
         puts ""
@@ -129,15 +129,15 @@ class PPGThread
         output = ""
         if input.strip.start_with?('ppg')
             if input == 'ppg set-time'
-                reset_time
+              reset_time
             elsif input == 'ppg switch'
-                switch_roles
+              switch_roles
             elsif input.start_with?('ppg modify')
               modify_user(input)
             elsif input == 'ppg pause'
-                pause
+              pause
             elsif input == 'ppg unpause'
-                unpause
+              ppgunpause
             else
                 string = "#{input.gsub('ppg', 'git')}"
                 puts(string)
