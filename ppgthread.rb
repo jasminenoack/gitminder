@@ -5,6 +5,7 @@ require 'io/console'
 require 'byebug'
 require 'date'
 
+
 class PPGThread
   include KeyPress
 
@@ -39,6 +40,10 @@ class PPGThread
         puts "    switches the navigator, and user of record"
         puts "ppg set-time"
         puts "    gits off the timer change script"
+        puts "ppg pause"
+        puts "    pauses the timer"
+        puts "ppg unpause"
+        puts "    unpauses the timer"
         puts ""
         print header_string
         set_time
@@ -110,6 +115,10 @@ class PPGThread
                 reset_time
             elsif input == 'ppg switch'
                 switch_roles
+            elsif input == 'ppg pause'
+                pause
+            elsif input == 'ppg unpause'
+                unpause
             else
                 string = "#{input.gsub('ppg', 'git')}"
                 puts(string)
@@ -134,6 +143,19 @@ class PPGThread
             print header_string
     end
 
+    def pause
+        if !@paused
+            @paused = (@next_switch_time - Time.now)
+        end
+    end
+
+    def unpause
+        if @paused
+            set_time(@paused/60)
+            @paused = nil
+        end
+    end
+
     def push
         output = ""
         output << `git push first_partner`
@@ -144,7 +166,11 @@ class PPGThread
 
     def switch_roles
       @navigator, @driver = @driver, @navigator
-      set_time
+      if @paused
+        @paused = @switch_time * 60
+      else
+        set_time
+      end
       `git config --local --replace-all user.name #{@navigator.name}`
       `git config --local --replace-all user.email #{@navigator.email}`
     end
@@ -152,7 +178,12 @@ class PPGThread
     def reset_time
         puts "How long would you like this round to be?"
         num = gets.to_i
-        set_time(num)
+
+        if @paused
+            @paused = num * 60
+        else
+            set_time(num)
+         end
     end
 
     def modify_user(identifier, attr, value)

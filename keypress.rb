@@ -6,7 +6,11 @@ module KeyPress
   def header_string
       pwd = `pwd`.chomp
       @git_branch = `git rev-parse --abbrev-ref HEAD`.chomp
-      next_switch_time = "#{(@next_switch_time - Time.now).floor}" 
+      if @paused
+        next_switch_time = "paused:#{@paused.floor}"
+      else
+        next_switch_time = "#{(@next_switch_time - Time.now).floor}" 
+      end
       return "|-#{@navigator.name}:~#{pwd}(#{@git_branch}) #{next_switch_time} -|$ "
   end
 
