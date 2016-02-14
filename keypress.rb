@@ -37,8 +37,18 @@ module KeyPress
     end
     case c
     when " "
-      @strings[@strings_index] << " "
-      print " "
+      if @strings[@strings_index].length == 0 || @right_index == -1
+        @strings[@strings_index]  << " "
+      else
+        split_index = @right_index + 1
+        @strings[@strings_index] = @strings[@strings_index][0...split_index] + " " + @strings[@strings_index][split_index..-1]
+      end
+      print "\r"
+      print header_string
+      print @strings[@strings_index]
+      print "\r"
+      print header_string
+      print @strings[@strings_index][0..@right_index]
     when "\t"
       # puts "T
     when "\r"
