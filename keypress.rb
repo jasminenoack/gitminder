@@ -22,6 +22,7 @@ module KeyPress
     STDIN.raw!
 
     input = STDIN.getc.chr
+
     if input == "\e" then
       input << STDIN.read_nonblock(3) rescue nil
       input << STDIN.read_nonblock(2) rescue nil
@@ -35,6 +36,7 @@ module KeyPress
 
   def handle_key_press
     c = read_char
+    @last_keypress = Time.now
     if @responding
       return
     end
@@ -73,18 +75,18 @@ module KeyPress
     when "\e[A"
       @right_index = -1
       return if @strings_index <= -(@strings.length)
-      print "\r"
+      clear_lines
       print " " * (header_string.length + @strings[@strings_index].length) + " "
-      print "\r"
+      clear_lines
       print header_string
       @strings_index -= 1
       print @strings[@strings_index]
     when "\e[B"
       @right_index = -1
       return if @strings_index == -1
-      print "\r"
+      clear_lines
       print " " * (header_string.length + @strings[@strings_index].length) + " "
-      print "\r"
+      clear_lines
       print header_string
       @strings_index += 1
     when "\e[C"
@@ -101,8 +103,8 @@ module KeyPress
       print @strings[@strings_index][0..@right_index]
     when "\177"
       print "\r"
-      print " " * (`tput cols`.to_i)
-      print "\r"
+      print " " * ((header_string + @strings[@strings_index]).length)
+      clear_lines
       print header_string
       if @strings[@strings_index].length == 0 || @right_index == -1
         @strings[@strings_index] = @strings[@strings_index][0..-2]
@@ -110,10 +112,10 @@ module KeyPress
         split_index = @right_index + 1
         @strings[@strings_index] = @strings[@strings_index][0...@right_index] + @strings[@strings_index][split_index..-1]
       end
-      print "\r"
+      clear_lines
       print header_string
       print @strings[@strings_index]
-      print "\r"
+      clear_lines
       print header_string
       print @strings[@strings_index][0..@right_index]
     when "\004"
@@ -129,10 +131,10 @@ module KeyPress
         split_index = @right_index + 1
         @strings[@strings_index] = @strings[@strings_index][0...split_index] + c + @strings[@strings_index][split_index..-1]
       end
-      print "\r"
+      clear_lines
       print header_string
       print @strings[@strings_index]
-      print "\r"
+      clear_lines
       print header_string
       print @strings[@strings_index][0..@right_index]
     end
