@@ -10,13 +10,19 @@ class PPGThread
   include KeyPress
 
     def initialize(switch_time, navigator, driver, threads, pairing_manager)
-        @switch_time = switch_time
-        @navigator = driver
-        @driver = navigator
+        @switch_time     = switch_time
+        @navigator       = driver
+        @driver          = navigator
         @pairing_manager = pairing_manager
+<<<<<<< HEAD
         switch_roles #switch roles to run git config...
         @threads = threads
         @strings = [""]
+=======
+        switch_roles #switch_roles to run git config
+        @threads       = threads
+        @strings       = [""]
+>>>>>>> master/master
         @strings_index = -1
         set_time
         @responding = false
