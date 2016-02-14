@@ -28,8 +28,8 @@ module KeyPress
 
   def handle_key_press
     c = read_char
-    if @getting_response
-      return
+    if @responding
+      return     
     end
     case c
     when " "

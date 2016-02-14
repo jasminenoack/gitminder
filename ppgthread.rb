@@ -17,6 +17,8 @@ class PPGThread
         @threads = threads
         @strings = [""]
         set_time
+        @responding = false
+        @last_commit = Time.now
     end
 
     def set_time(delta=nil)
@@ -26,20 +28,35 @@ class PPGThread
 
     def run
         puts ""
+        puts ""
+        puts ""
+        puts ""
         puts "Enjoy GitMinder"
+        puts ""
+        puts "EXTRA COMMANDS:"
+        puts ""
+        puts "ppg switch"
+        puts "    switches the navigator, and user of record"
+        puts "ppg set-time"
+        puts "    gits off the timer change script"
         puts ""
         print header_string
         set_time
         @threads << Thread.new do
             loop do
+                if @responding
+                    next
+                end
                 if @next_switch_time < Time.now
                     if @strings[-1].length < 1
                         print "\r"
                         print " " * (header_string.length + @strings[-1].length)
                         print "\r"
+                        puts ""
                         puts "It has been #{@switch_time} minutes.  Please change the navigator"
                         print header_string
                     else
+                        puts ""
                         puts "\nIt has been #{@switch_time} minutes.  Please change the navigator"
                         print header_string
                         print @strings[-1]
@@ -47,22 +64,38 @@ class PPGThread
                 end
                 string = handle_key_press
                 if string
-                   process(string)
+                    @responding = true
+                    process(string)
+                    @responding = false
                 end
             end
         end
         @threads << Thread.new do
             loop do
+                if @responding
+                    next
+                end
                 print "\r"
                 print " " * (header_string.length + @strings[-1].length) + " "
                 print "\r"
                 print header_string + @strings[-1]
                 if (@next_switch_time - Time.now).floor == 0
                     print "\r"
+                    puts ""
                     print "\nIt has been #{@switch_time} minutes.  Please change the navigator\n"
                     print "\r"
                     print header_string
                     print @strings[-1]
+                end
+                if Time.now - @last_commit > 5 * 60 && !@commit_alerted
+                    @commit_alerted = true
+                    print "\r"
+                    puts ""
+                    print "\nIt has been 5 minutes consider committing\n"
+                    print "\r"
+                    print header_string
+                    print @strings[-1]
+                    sleep 10
                 end
                 sleep 1
             end
@@ -71,10 +104,15 @@ class PPGThread
     end
 
     def process(input)
+        output = ""
         if input.strip.start_with?('ppg')
             if input.start_with?('ppg commit')
                 string = "#{input.gsub('ppg', 'git')}"
                 output = commit (string)
+            elsif input == 'ppg set-time'
+                reset_time
+            elsif input == 'ppg switch'
+                switch_roles
             else
                 string = "#{input.gsub('ppg', 'git')}"
                 puts(string)
@@ -100,8 +138,14 @@ class PPGThread
     def switch_roles
       @navigator, @driver = @driver, @navigator
       set_time
-      `git config user.name #{@navigator.name}`
-      `git config user.email #{@navigator.email}`
+      `git config --local --replace-all user.name #{@navigator.name}`
+      `git config --local --replace-all user.email #{@navigator.email}`
+    end
+
+    def reset_time
+        puts "How long would you like this round to be?"
+        num = gets.to_i
+        set_time(num)
     end
 
     def modify_user(identifier, attr, value)
@@ -117,17 +161,17 @@ class PPGThread
 
     def commit(string)
         unless string.include?('-m')
-                puts "Please enter a commit message:"
-                @getting_response = true
-                message = gets.chomp
-                unless message.include?('"')
-                    message = "\"#{message}\""
-                end
-                @getting_response = false
-                string += " -m #{message}"
+            puts "Please enter a commit message:"
+            message = gets.chomp
+            unless message.include?('"')
+                message = "\"#{message}\""
             end
-            puts string
-            output = `#{string}`
-            return output
+            string += " -m #{message}"
+        end
+        puts string
+        output = `#{string}`
+        @last_commit = Time.now
+        @commit_alerted = false
+        return output
     end
 end
