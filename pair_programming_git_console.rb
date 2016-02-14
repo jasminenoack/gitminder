@@ -14,7 +14,7 @@ class PairProgrammingGitConsole
   include Intro
   include KeyPress
 
-  attr_accessor :thread, :switch_timer, :navigator, :driver, :needs_nav_change
+  attr_accessor :thread, :switch_timer, :navigator, :driver
 
   def initialize()
     git_init

@@ -33,7 +33,7 @@ class PPGThread
         @threads << Thread.new do
             @threads << Thread.new do
                 loop do
-                    if @pairing_manager.needs_nav_change
+                    if @next_switch_time < Time.now
                         if @strings[-1].length < 1
                             puts "It has been #{@switch_time/60} minutes.  Please change the navigator"
                         else
@@ -49,7 +49,7 @@ class PPGThread
             end
             @threads << Thread.new do
                 loop do
-                    if !@pairing_manager.needs_nav_change
+                    if @next_switch_time < Time.now
                         sleep @switch_time * 60
                         @pairing_manager.needs_nav_change = true
                         print "\r"
@@ -94,7 +94,7 @@ class PPGThread
 
     def switch_roles
       @navigator, @driver = @driver, @navigator
-      @pairing_manager.needs_nav_change = false
+      set_time
       `git config user.name #{@navigator.name}`
       `git config user.email #{@navigator.email}`
     end
