@@ -27,7 +27,7 @@ class PPGThread
 
     def set_time(delta=nil)
         delta = delta || @switch_time
-        @next_switch_time = Time.now + (delta)
+        @next_switch_time = Time.now + (delta * 60)
     end
 
     def run
@@ -58,29 +58,29 @@ class PPGThread
                 if @responding
                     next
                 end
-                if @next_switch_time < Time.now
-                    if @strings[@strings_index].length < 1
-                        clear_lines
-                        print " " * (`tput cols`.to_i)
-                        clear_lines
-                        puts ""
-                        puts "It has been #{@switch_time} minutes.  Please change the navigator".upcase
-                        print header_string
-                    else
-                        puts ""
-                        puts "\nIt has been #{@switch_time} minutes.  Please change the navigator".upcase
-                        print header_string
-                        print @strings[@strings_index]
-                        clear_lines
-                        print header_string
-                        print @strings[@strings_index][0..@right_index]
-                    end
-                end
                 string = handle_key_press
                 if string
                     @responding = true
                     process(string)
                     @responding = false
+                    if @next_switch_time < Time.now
+                        if @strings[@strings_index].length < 1
+                            clear_lines
+                            print " " * (`tput cols`.to_i)
+                            clear_lines
+                            puts ""
+                            puts "It has been #{@switch_time} minutes.  Please change the navigator with ppg switch".upcase
+                            print header_string
+                        else
+                            puts ""
+                            puts "\nIt has been #{@switch_time} minutes.  Please change the navigator with ppg switch".upcase
+                            print header_string
+                            print @strings[@strings_index]
+                            clear_lines
+                            print header_string
+                            print @strings[@strings_index][0..@right_index]
+                        end
+                    end
                 end
             end
         end
@@ -100,7 +100,7 @@ class PPGThread
                 if (@next_switch_time - Time.now).floor == 0
                     clear_lines
                     puts ""
-                    print "\nIt has been #{@switch_time} minutes.  Please change the navigator\n".upcase
+                    print "\nIt has been #{@switch_time} minutes.  Please change the navigator with ppg switch\n".upcase
                     clear_lines
                     print header_string
                     print @strings[@strings_index]
