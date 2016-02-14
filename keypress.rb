@@ -47,7 +47,6 @@ module KeyPress
           @strings = @strings.drop(@strings.length - 100)
       end
       puts ""
-      print header_string if self.class == PPGThread
       return command
     when "\n"
       # puts "LINE FEED"

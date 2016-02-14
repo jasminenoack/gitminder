@@ -35,9 +35,14 @@ class PPGThread
                 loop do
                     if @next_switch_time < Time.now
                         if @strings[-1].length < 1
-                            puts "It has been #{@switch_time/60} minutes.  Please change the navigator"
+                            print "\r"
+                            print " " * (header_string.length + @strings[-1].length)
+                            print "\r"
+                            puts "It has been #{@switch_time} minutes.  Please change the navigator"
+                            print header_string
                         else
-                            puts "\nIt has been #{@switch_time/60} minutes.  Please change the navigator"
+                            puts "\nIt has been #{@switch_time} minutes.  Please change the navigator"
+                            print header_string
                             print @strings[-1]
                         end
                     end
@@ -51,16 +56,15 @@ class PPGThread
                 loop do
                     if @next_switch_time < Time.now
                         sleep @switch_time * 60
-                        @pairing_manager.needs_nav_change = true
                         print "\r"
                         print "\nIt has been #{@switch_time} minutes.  Please change the navigator\n"
                         print "\r"
                         print header_string
                         print @strings[-1]
+                        sleep 10
                     end
                 end
             end
-            @threads.each {|thread| thread.abort_on_exception = true}
         end
         @threads.each {|thread| thread.abort_on_exception = true}
     end
