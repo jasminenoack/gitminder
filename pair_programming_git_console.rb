@@ -18,8 +18,8 @@ class PairProgrammingGitConsole
     intro_prompt
     @threads = []
     @switch_timer = 1
-    @user_1 = User.new({name: 'name', email: 'email', repo: 'https://github.com/Coroecram/test.git', role: 'navigator'})
-    @user_2 = User.new({name: 'name', email: 'email', repo: 'https://github.com/Coroecram/test.git', role: 'driver'})
+    @user_1 = User.new({name: 'name', email: 'email', repo: 'https://github.com/Coroecram/test.git', role: 'navigator', identifier: 1})
+    @user_2 = User.new({name: 'name', email: 'email', repo: 'https://github.com/Coroecram/test.git', role: 'driver', identifier: 2})
     @thread = PPGThread.new(@switch_timer, @user_1, @user_2, @threads, self)
     @thread.run
     ThreadsWait.all_waits(@threads)

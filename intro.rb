@@ -1,17 +1,17 @@
 module Intro
 
   def intro_prompt
-    @user_1 = new_user("navigator")
-    @user_2 = new_user("driver")
+    @user_1 = new_user("navigator", 1)
+    @user_2 = new_user("driver", 2)
     @switch_timer = switch_timer_prompt
     @navigator, @driver = @user_1, @user_2
   end
 
-  def new_user(role)
+  def new_user(role, identifier)
     name = name_prompt(role)
     email = email_prompt(role)
     repo = repo_prompt(role)
-    info = {name: name, email: email, repo: repo, role: role}
+    info = {name: name, email: email, repo: repo, role: role, identifier: identifier}
 
     confirm_user_info?(info) ? User.new(info) : new_user(role)
   end

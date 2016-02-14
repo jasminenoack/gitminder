@@ -61,6 +61,11 @@ class PPGThread
       return input
     end
 
+    def modify_user(identifier, attr, value)
+      user = (identifier == 1 ? @user_1 : @user_2)
+      user.instance_variable_set("@#{attr}".to_sym, value)
+    end
+
     def handle_key_press
       c = read_char
       case c
