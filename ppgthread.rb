@@ -198,16 +198,16 @@ class PPGThread
       raise FormatError, "Please enter a valid command 'ppg modify -attribute -role new-value'" if parsed_input.length < 3
       attr = parsed_input.shift
       raise FormatError, "Please enter a valid attribute (-name/-email/-repo)" if !(attr =~ /\A-(name|email|repo)\z/)
+      role = parsed_input.shift
+      raise FormatError, "Please enter a valid role (-navigator/-driver)" if !(role =~ /\A-(navigator|driver)\z/)
+      value = parsed_input.join(" ")
+      raise NoInputError, "Please enter a new value" if !value
+
       if attr == '-email'
         raise FormatError, "Please enter a valid email address" if !(User.valid_email?(value))
       elsif attr == '-repo'
         raise FormatError, "Please enter a valid Github Repository address" if !(User.valid_repo?(value))
       end
-
-      role = parsed_input.shift
-      raise FormatError, "Please enter a valid role" if !(role =~ /\A-(navigator|driver)\z/)
-      value = parsed_input.join(" ")
-      raise NoInputError, "Please enter a new value" if !value
 
       user = (role == '-navigator' ? @navigator : @driver)
       user.instance_variable_set("@#{attr[1..-1]}".to_sym, value)
