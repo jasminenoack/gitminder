@@ -56,9 +56,9 @@ class PPGThread
                 end
                 if @next_switch_time < Time.now
                     if @strings[@strings_index].length < 1
-                        print "\r"
+                        clear_lines
                         print " " * (`tput cols`.to_i)
-                        print "\r"
+                        clear_lines
                         puts ""
                         puts "It has been #{@switch_time} minutes.  Please change the navigator".upcase
                         print header_string
@@ -67,7 +67,7 @@ class PPGThread
                         puts "\nIt has been #{@switch_time} minutes.  Please change the navigator".upcase
                         print header_string
                         print @strings[@strings_index]
-                        print "\r"
+                        clear_lines
                         print header_string
                         print @strings[@strings_index][0..@right_index]
                     end
@@ -85,33 +85,31 @@ class PPGThread
                 if @responding
                     next
                 end
-                print "\r"
-                print " " * (`tput cols`.to_i)
-                print "\r"
+                clear_lines
                 print header_string
                 print @strings[@strings_index]
-                print "\r"
+                clear_lines
                 print header_string
                 print @strings[@strings_index][0..@right_index]
                 if (@next_switch_time - Time.now).floor == 0
-                    print "\r"
+                    clear_lines
                     puts ""
                     print "\nIt has been #{@switch_time} minutes.  Please change the navigator\n".upcase
-                    print "\r"
+                    clear_lines
                     print header_string
                     print @strings[@strings_index]
-                    print "\r"
+                    clear_lines
                     print header_string
                     print @strings[@strings_index][0..@right_index]
                 end
                 if Time.now - @last_commit > 5 * 60 && !@commit_alerted
                     @commit_alerted = true
-                    print "\r"
+                    clear_lines
                     puts ""
                     print "\nIt has been 5 minutes consider committing\n".upcase
                     print header_string
                     print @strings[@strings_index]
-                    print "\r"
+                    clear_lines
                     print header_string
                     print @strings[@strings_index][0..@right_index]
                     sleep 10
@@ -225,5 +223,12 @@ class PPGThread
         @last_commit = Time.now
         @commit_alerted = false
         return output
+    end
+
+    def clear_lines
+        print "\r"
+        print " " * `tput cols`.to_i
+        print "\r"
+        ((header_string + @strings[@strings_index]).length / `tput cols`.to_i).times { |i| print "\e[A\e[K" unless i == 0}
     end
 end
