@@ -56,11 +56,20 @@ module KeyPress
       # puts "LINE FEED"
     when "\e"
       # puts "ESCAPE"
-    when "\e[A" # UP ARROW
-      return if @strings_index <= -@strings.length
+    when "\e[A"
+      return if @strings_index <= -(@strings.length)
+      print "\r"
+      print " " * (header_string.length + @strings[@strings_index].length) + " "
+      print "\r"
+      print header_string
       @strings_index -= 1
-    when "\e[B" # DOWN ARROW
+      print @strings[@strings_index]
+    when "\e[B"
       return if @strings_index == -1
+      print "\r"
+      print " " * (header_string.length + @strings[@strings_index].length) + " "
+      print "\r"
+      print header_string
       @strings_index += 1
     when "\e[C"
       # puts "RIGHT ARROW"
@@ -72,6 +81,7 @@ module KeyPress
       print "\r"
       print header_string
       @strings[@strings_index] = @strings[@strings_index][0..-2]
+      @strings[-1] = ""
       print @strings[@strings_index]
     when "\004"
       # puts "DELETE"

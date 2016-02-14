@@ -195,9 +195,9 @@ class PPGThread
 
     def modify_user(input)
       parsed_input = input.split(" ").drop(2)
-      raise FormatError, "Please enter a valid ppg modify -attribute -role new-value" if parsed_input.length < 3
+      raise FormatError, "Please enter a valid command 'ppg modify -attribute -role new-value'" if parsed_input.length < 3
       attr = parsed_input.shift
-      raise FormatError, "Please enter a valid attribute" if !(attr =~ /\A-(name|email|repo)\z/)
+      raise FormatError, "Please enter a valid attribute (-name/-email/-repo)" if !(attr =~ /\A-(name|email|repo)\z/)
       if attr == '-email'
         raise FormatError, "Please enter a valid email address" if !(User.valid_email?(value))
       elsif attr == '-repo'
