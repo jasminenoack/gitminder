@@ -14,14 +14,14 @@ class PairProgrammingGitConsole
   include Intro
   include KeyPress
 
-  attr_accessor :thread, :switch_timer, :navigator, :driver, :needs_nav_change
+  attr_accessor :thread, :switch_timer, :navigator, :driver
 
   def initialize()
     git_init
     intro_prompt
     create_remotes
     @threads = []
-    @switch_timer = 1
+    @switch_timer = 15
     @user_1 = User.new({name: 'name', email: 'email', repo: 'https://github.com/Coroecram/test.git', role: 'navigator', identifier: 1})
     @user_2 = User.new({name: 'name', email: 'email', repo: 'https://github.com/Coroecram/test.git', role: 'driver', identifier: 2})
     @thread = PPGThread.new(@switch_timer, @navigator, @driver, @threads, self)
@@ -34,6 +34,12 @@ class PairProgrammingGitConsole
   end
 
   def create_remotes
+    remotes = `git remote`
+    if remotes.include?('first_partner')
+      `git remote remove first_partner`
+    elsif remotes.include?('second_partner')
+      `git remote remove second_partner`
+    end
     `git remote add first_partner #{@user_1.repo}`
     `git remote add second_partner #{@user_2.repo}`
   end

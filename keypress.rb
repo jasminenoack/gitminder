@@ -1,11 +1,17 @@
+require 'date'
 require 'byebug'
+
 module KeyPress
 
   def header_string
       pwd = `pwd`.chomp
-      @user = `whoami`.chomp
       @git_branch = `git rev-parse --abbrev-ref HEAD`.chomp
-      return "|-#{@user}:~#{pwd}(#{@git_branch})-|$ "
+      if @paused
+        next_switch_time = "paused:#{@paused.floor}"
+      else
+        next_switch_time = "#{(@next_switch_time - Time.now).floor}"
+      end
+      return "|-#{@navigator.name}:~#{pwd}(#{@git_branch}) #{next_switch_time} -|$ "
   end
 
   def read_char
@@ -26,7 +32,7 @@ module KeyPress
 
   def handle_key_press
     c = read_char
-    if @getting_response
+    if @responding
       return
     end
     case c
@@ -44,7 +50,6 @@ module KeyPress
           @strings = @strings.drop(@strings.length - 100)
       end
       puts ""
-      print header_string if self.class == PPGThread
       return command
     when "\n"
       # puts "LINE FEED"
