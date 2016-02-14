@@ -14,4 +14,12 @@ attr_accessor :name, :email, :repo, :role, :identifier
     role = (role == 'navigator' ? 'driver' : 'navigator')
   end
 
+  def self.valid_repo?(repo)
+    !!(repo =~ /https:\/\/github.com\/\w+\/\w+\.git/)
+  end
+
+  def self.valid_email(email)
+    !!(email =~ /\A[^@\s]+@([^@\s]+\.)+[^@\s]+\z/)
+  end
+  
 end

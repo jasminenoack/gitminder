@@ -19,7 +19,7 @@ module Intro
   def name_prompt(role)
     puts "\nWhat is the #{role}'s name?"
     name = gets.chomp
-    raise InputError, "**Please enter a name**" if name == ""
+    raise InputError, "Please enter a name" if name == ""
 
     name
     rescue ArgumentError => e
@@ -30,8 +30,8 @@ module Intro
   def email_prompt(role)
     puts "\nWhat is the #{role}'s email?"
     email = gets.chomp
-    raise DuplicateError, "**Driver and Navigator cannot have the same email!**" if @user_1 && @user_1.email == email
-    raise FormatError, "**Please enter a valid email address**" unless email =~ /\A[^@\s]+@([^@\s]+\.)+[^@\s]+\z/
+    raise DuplicateError, "Driver and Navigator cannot have the same email!" if @user_1 && @user_1.email == email
+    raise FormatError, "Please enter a valid email address" if !(User.valid_email?(email))
 
     email
     rescue ArgumentError => e
@@ -42,8 +42,8 @@ module Intro
   def repo_prompt(role)
     puts "\nWhat is the #{role}'s git repository url?"
     repo = gets.chomp
-    raise DuplicateError, "**Driver and Navigator cannot have the same repo!**" if @user_1 && @user_1.repo == repo
-    raise FormatError, "Please enter a valid Github Repository address" if !(repo =~ /https:\/\/github.com\/\w+\/\w+\.git/)
+    raise DuplicateError, "Driver and Navigator cannot have the same repo!" if @user_1 && @user_1.repo == repo
+    raise FormatError, "Please enter a valid Github Repository address" if !(User.valid_repo?(repo))
 
     repo
     rescue ArgumentError => e
