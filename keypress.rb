@@ -1,3 +1,4 @@
+require 'byebug'
 module KeyPress
 
   def header_string
@@ -33,7 +34,7 @@ module KeyPress
       @strings[-1] << " "
       print " "
     when "\t"
-      # puts "TAB"
+      # puts "T
     when "\r"
       command = @strings[-1]
       if @strings[-1].length > 0
@@ -73,6 +74,13 @@ module KeyPress
     when /^.$/
       @strings[-1] << c
       print c
+    end
+  end
+
+  def input_prompt
+    length = @strings.length
+    until @strings.length == length + 1
+      handle_key_press
     end
   end
 end

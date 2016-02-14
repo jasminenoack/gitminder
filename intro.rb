@@ -1,25 +1,25 @@
 module Intro
 
   def intro_prompt
-    @user_1 = new_user("navigator", 1)
-    @user_2 = new_user("driver", 2)
+    @strings      = [""]
+    @user_1       = new_user("navigator", 1)
+    @user_2       = new_user("driver", 2)
     @switch_timer = switch_timer_prompt
     @navigator, @driver = @user_1, @user_2
-    @strings = [""]
   end
 
   def new_user(role, identifier)
-    name = name_prompt(role)
+    name  = name_prompt(role)
     email = email_prompt(role)
-    repo = repo_prompt(role)
-    info = {name: name, email: email, repo: repo, role: role, identifier: identifier}
+    repo  = repo_prompt(role)
+    info  = {name: name, email: email, repo: repo, role: role, identifier: identifier}
 
     confirm_user_info?(info) ? User.new(info) : new_user(role)
   end
 
   def name_prompt(role)
     puts "\nWhat is the #{role}'s name?"
-    name = gets.chomp
+    name = input_prompt
     raise InputError, "Please enter a name" if name == ""
 
     name
