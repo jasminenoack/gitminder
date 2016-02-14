@@ -19,7 +19,7 @@ class PPGThread
         @strings       = [""]
         @strings_index = -1
         set_time
-        @responding = false
+        @responding  = false
         @last_commit = Time.now
     end
 
