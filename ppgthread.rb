@@ -14,15 +14,9 @@ class PPGThread
         @navigator       = driver
         @driver          = navigator
         @pairing_manager = pairing_manager
-<<<<<<< HEAD
-        switch_roles #switch roles to run git config...
-        @threads = threads
-        @strings = [""]
-=======
         switch_roles #switch_roles to run git config
         @threads       = threads
         @strings       = [""]
->>>>>>> master/master
         @strings_index = -1
         set_time
         @responding = false
