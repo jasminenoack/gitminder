@@ -86,6 +86,7 @@ class PPGThread
       when "\t"
         # puts "TAB"
       when "\r"
+        command = @strings[-1]
         if @strings[-1].length > 0
             @strings << ""
         end
@@ -94,7 +95,7 @@ class PPGThread
         end
         puts ""
         print header_string
-        return @strings[-2]
+        return command
       when "\n"
         # puts "LINE FEED"
       when "\e"
@@ -132,7 +133,8 @@ class PPGThread
                 string = "#{input.gsub('ppg', 'git')}"
                 output = commit (string)
             else
-                sting = "#{input.gsub('ppg', 'git')}"
+                string = "#{input.gsub('ppg', 'git')}"
+                puts(string)
                 output = `#{string}`
             end
         else
@@ -144,8 +146,9 @@ class PPGThread
         end
         if output.length > 0
             puts output
-            print header_string
         end
+        print "\r"
+        print header_string
         rescue => boom
             puts boom
             print header_string
