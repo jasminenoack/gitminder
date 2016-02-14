@@ -27,7 +27,7 @@ class PPGThread
 
     def set_time(delta=nil)
         delta = delta || @switch_time
-        @next_switch_time = Time.now + (delta * 60)
+        @next_switch_time = Time.now + (delta)
     end
 
     def run
@@ -109,7 +109,9 @@ class PPGThread
                     @commit_alerted = true
                     clear_lines
                     puts ""
+                    print "\r"
                     print "\nIt has been 5 minutes consider committing\n".upcase
+                    print "\r"
                     print header_string
                     print @strings[@strings_index]
                     clear_lines
@@ -117,7 +119,7 @@ class PPGThread
                     print @strings[@strings_index][0..@right_index]
                     sleep 10
                 end
-                sleep 5
+                sleep 1
             end
         end
         @threads.each {|thread| thread.abort_on_exception = true}
@@ -230,5 +232,6 @@ class PPGThread
 
     def clear_lines
         print "\b" * ((header_string + @strings[@strings_index]).length)
+        print "\r"
     end
 end
