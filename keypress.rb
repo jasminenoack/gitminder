@@ -1,10 +1,14 @@
+require 'date'
+require 'byebug'
+
 module KeyPress
 
   def header_string
       pwd = `pwd`.chomp
       @user = `whoami`.chomp
       @git_branch = `git rev-parse --abbrev-ref HEAD`.chomp
-      return "|-#{@user}:~#{pwd}(#{@git_branch})-|$ "
+      next_switch = ((@next_switch_time - Time.new) / 60).floor
+      return "|-#{@user}:~#{pwd}(#{@git_branch})\n{#{@navigator.name}:#{next_switch} minutes left}-|$ "
   end
 
   def read_char

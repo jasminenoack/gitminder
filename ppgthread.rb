@@ -3,6 +3,7 @@ require_relative 'custom_errors'
 require_relative 'user'
 require 'io/console'
 require 'byebug'
+require 'date'
 
 class PPGThread
   include KeyPress
@@ -11,10 +12,16 @@ class PPGThread
         @switch_time = switch_time
         @navigator = driver
         @driver = navigator
+        @pairing_manager = pairing_manager
         switch_roles #switch roles to run git config...
         @threads = threads
-        @pairing_manager = pairing_manager
         @strings = [""]
+        set_time
+    end
+
+    def set_time(delta=nil)
+        delta = delta || @switch_time
+        @next_switch_time = Time.new + (delta * 60)
     end
 
     def run
@@ -22,6 +29,7 @@ class PPGThread
         puts "Enjoy GitMinder"
         puts ""
         print header_string
+        set_time
         @threads << Thread.new do
             @threads << Thread.new do
                 loop do
