@@ -34,14 +34,14 @@ class PairProgrammingGitConsole
   end
 
   def create_remotes
-    begin
-      `git remote add first_partner #{@user_1.repo}`
-    rescue
+    remotes = `git remote`
+    if remotes.include?('first_partner')
+      `git remote remove first_partner`
+    elsif remotes.include?('second_partner')
+      `git remote remove second_partner`
     end
-    begin
-      `git remote add second_partner #{@user_2.repo}`
-    rescue
-    end
+    `git remote add first_partner #{@user_1.repo}`
+    `git remote add second_partner #{@user_2.repo}`
   end
 end
 

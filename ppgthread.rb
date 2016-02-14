@@ -53,11 +53,11 @@ class PPGThread
                         print " " * (header_string.length + @strings[-1].length)
                         print "\r"
                         puts ""
-                        puts "It has been #{@switch_time} minutes.  Please change the navigator"
+                        puts "It has been #{@switch_time} minutes.  Please change the navigator".upcase
                         print header_string
                     else
                         puts ""
-                        puts "\nIt has been #{@switch_time} minutes.  Please change the navigator"
+                        puts "\nIt has been #{@switch_time} minutes.  Please change the navigator".upcase
                         print header_string
                         print @strings[-1]
                     end
@@ -82,7 +82,7 @@ class PPGThread
                 if (@next_switch_time - Time.now).floor == 0
                     print "\r"
                     puts ""
-                    print "\nIt has been #{@switch_time} minutes.  Please change the navigator\n"
+                    print "\nIt has been #{@switch_time} minutes.  Please change the navigator\n".upcase
                     print "\r"
                     print header_string
                     print @strings[-1]
@@ -91,7 +91,7 @@ class PPGThread
                     @commit_alerted = true
                     print "\r"
                     puts ""
-                    print "\nIt has been 5 minutes consider committing\n"
+                    print "\nIt has been 5 minutes consider committing\n".upcase
                     print "\r"
                     print header_string
                     print @strings[-1]
