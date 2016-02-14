@@ -144,7 +144,7 @@ class PPGThread
         end
         if output.length > 0
             puts output
-            puts header_string
+            print header_string
         end
         rescue => boom
             puts boom
