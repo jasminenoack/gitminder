@@ -1,14 +1,17 @@
+require_relative 'keypress'
+require_relative 'custom_errors'
+require_relative 'user'
 require 'io/console'
 require 'byebug'
-require_relative 'keypress'
 
 class PPGThread
   include KeyPress
 
-    def initialize(switch_time, user_1, user_2, threads, pairing_manager)
+    def initialize(switch_time, navigator, driver, threads, pairing_manager)
         @switch_time = switch_time
-        @user_1 = user_1
-        @user_2 = user_2
+        @navigator = driver
+        @driver = navigator
+        switch_roles #switch roles to run git config...
         @threads = threads
         @pairing_manager = pairing_manager
         @strings = [""]
@@ -79,6 +82,24 @@ class PPGThread
         rescue => boom
             puts boom
             print header_string
+    end
+
+    def switch_roles
+      @navigator, @driver = @driver, @navigator
+      @pairing_manager.needs_nav_change = false
+      `git config user.name #{@navigator.name}`
+      `git config user.email #{@navigator.email}`
+    end
+
+    def modify_user(identifier, attr, value)
+      if attr == 'email'
+        raise FormatError, "Please enter a valid email address" if !(User.valid_email?(value))
+      elsif attr == 'repo'
+        raise FormatError, "Please enter a valid Github Repository address" if !(User.valid_repo?(value))
+      end
+
+      user = (@navigator.identifier == identifier ? @navigator : @driver)
+      user.instance_variable_set("@#{attr}".to_sym, value)
     end
 
     def commit(string)
