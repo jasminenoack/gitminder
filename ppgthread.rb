@@ -106,12 +106,12 @@ class PPGThread
                     print header_string
                     print @strings[@strings_index][0..@right_index]
                 end
-                if Time.now - @last_commit > 5 * 60 && !@commit_alerted
+                if Time.now - @last_commit > 30 && !@commit_alerted
                     @commit_alerted = true
                     clear_lines
                     puts ""
                     print "\r"
-                    print "\nIt has been 5 minutes consider committing\n".upcase
+                    print "\nIt has been 30 seconds consider committing\n".upcase
                     print "\r"
                     print header_string
                     print @strings[@strings_index]

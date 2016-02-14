@@ -77,7 +77,7 @@ module Intro
       end
     elsif switch_timer.is_i?
       switch_timer = switch_timer.to_i
-      if switch_timer <= 120 && switch_timer >= 15
+      if switch_timer <= 120 && switch_timer >= 1
         if timer_confirm?(switch_timer)
           switch_timer
         else
