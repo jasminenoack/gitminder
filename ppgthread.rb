@@ -3,6 +3,8 @@ require_relative 'custom_errors'
 require_relative 'user'
 require 'io/console'
 require 'byebug'
+require 'date'
+
 
 class PPGThread
   include KeyPress
@@ -11,65 +13,122 @@ class PPGThread
         @switch_time = switch_time
         @navigator = driver
         @driver = navigator
+        @pairing_manager = pairing_manager
         switch_roles #switch roles to run git config...
         @threads = threads
-        @pairing_manager = pairing_manager
         @strings = [""]
+        set_time
+        @responding = false
+        @last_commit = Time.now
+    end
+
+    def set_time(delta=nil)
+        delta = delta || @switch_time
+        @next_switch_time = Time.now + (delta * 60)
     end
 
     def run
         puts ""
+        puts ""
+        puts ""
+        puts ""
         puts "Enjoy GitMinder"
         puts ""
+        puts "EXTRA COMMANDS:"
+        puts ""
+        puts "ppg switch"
+        puts "    switches the navigator, and user of record"
+        puts "ppg set-time"
+        puts "    gits off the timer change script"
+        puts "ppg pause"
+        puts "    pauses the timer"
+        puts "ppg unpause"
+        puts "    unpauses the timer"
+        puts ""
         print header_string
+        set_time
         @threads << Thread.new do
-            @threads << Thread.new do
-                loop do
-                    if @pairing_manager.needs_nav_change
-                        if @strings[-1].length < 1
-                            puts "It has been #{@switch_time/60} minutes.  Please change the navigator"
-                        else
-                            puts "\nIt has been #{@switch_time/60} minutes.  Please change the navigator"
-                            print @strings[-1]
-                        end
-                    end
-                    string = handle_key_press
-                    if string
-                       process(string)
-                    end
+            loop do
+                if @responding
+                    next
                 end
-            end
-            @threads << Thread.new do
-                loop do
-                    if !@pairing_manager.needs_nav_change
-                        sleep @switch_time * 60
-                        @pairing_manager.needs_nav_change = true
+                if @next_switch_time < Time.now
+                    if @strings[-1].length < 1
                         print "\r"
-                        print "\nIt has been #{@switch_time} minutes.  Please change the navigator\n"
+                        print " " * (header_string.length + @strings[-1].length)
                         print "\r"
+                        puts ""
+                        puts "It has been #{@switch_time} minutes.  Please change the navigator".upcase
+                        print header_string
+                    else
+                        puts ""
+                        puts "\nIt has been #{@switch_time} minutes.  Please change the navigator".upcase
                         print header_string
                         print @strings[-1]
                     end
                 end
+                string = handle_key_press
+                if string
+                    @responding = true
+                    process(string)
+                    @responding = false
+                end
             end
-            @threads.each {|thread| thread.abort_on_exception = true}
+        end
+        @threads << Thread.new do
+            loop do
+                if @responding
+                    next
+                end
+                print "\r"
+                print " " * (header_string.length + @strings[-1].length) + " "
+                print "\r"
+                print header_string + @strings[-1]
+                if (@next_switch_time - Time.now).floor == 0
+                    print "\r"
+                    puts ""
+                    print "\nIt has been #{@switch_time} minutes.  Please change the navigator\n".upcase
+                    print "\r"
+                    print header_string
+                    print @strings[-1]
+                end
+                if Time.now - @last_commit > 5 * 60 && !@commit_alerted
+                    @commit_alerted = true
+                    print "\r"
+                    puts ""
+                    print "\nIt has been 5 minutes consider committing\n".upcase
+                    print "\r"
+                    print header_string
+                    print @strings[-1]
+                    sleep 10
+                end
+                sleep 1
+            end
         end
         @threads.each {|thread| thread.abort_on_exception = true}
     end
 
     def process(input)
+        output = ""
         if input.strip.start_with?('ppg')
-            if input.start_with?('ppg commit')
-                string = "#{input.gsub('ppg', 'git')}"
-                output = commit (string)
+            if input == 'ppg set-time'
+                reset_time
+            elsif input == 'ppg switch'
+                switch_roles
+            elsif input == 'ppg pause'
+                pause
+            elsif input == 'ppg unpause'
+                unpause
             else
                 string = "#{input.gsub('ppg', 'git')}"
                 puts(string)
-                output = `#{string}`
+                process(string)
             end
         else
             if input.start_with?('git commit')
                 output = commit(input)
+            elsif input.start_with?('git push')
+                output = push
             else
                 output = `#{input}`
             end
@@ -84,11 +143,47 @@ class PPGThread
             print header_string
     end
 
+    def pause
+        if !@paused
+            @paused = (@next_switch_time - Time.now)
+        end
+    end
+
+    def unpause
+        if @paused
+            set_time(@paused/60)
+            @paused = nil
+        end
+    end
+
+    def push
+        output = ""
+        output << `git push first_partner`
+        output << "\n"
+        output << `git push second_partner`
+        return output
+    end
+
     def switch_roles
       @navigator, @driver = @driver, @navigator
-      @pairing_manager.needs_nav_change = false
-      `git config user.name #{@navigator.name}`
-      `git config user.email #{@navigator.email}`
+      if @paused
+        @paused = @switch_time * 60
+      else
+        set_time
+      end
+      `git config --local --replace-all user.name #{@navigator.name}`
+      `git config --local --replace-all user.email #{@navigator.email}`
+    end
+
+    def reset_time
+        puts "How long would you like this round to be?"
+        num = gets.to_i
+
+        if @paused
+            @paused = num * 60
+        else
+            set_time(num)
+         end
     end
 
     def modify_user(identifier, attr, value)
@@ -104,17 +199,17 @@ class PPGThread
 
     def commit(string)
         unless string.include?('-m')
-                puts "Please enter a commit message:"
-                @getting_response = true
-                message = gets.chomp
-                unless message.include?('"')
-                    message = "\"#{message}\""
-                end
-                @getting_response = false
-                string += " -m #{message}"
+            puts "Please enter a commit message:"
+            message = gets.chomp
+            unless message.include?('"')
+                message = "\"#{message}\""
             end
-            puts string
-            output = `#{string}`
-            return output
+            string += " -m #{message}"
+        end
+        puts string
+        output = `#{string}`
+        @last_commit = Time.now
+        @commit_alerted = false
+        return output
     end
 end

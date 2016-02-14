@@ -15,7 +15,7 @@ attr_accessor :name, :email, :repo, :role, :identifier
   end
 
   def self.valid_repo?(repo)
-    !!(repo =~ /https:\/\/github.com\/\w+\/\w+\.git/)
+    !!(repo =~ /https:\/\/github.com\/\S+\/\S+\.git/)
   end
 
   def self.valid_email?(email)
