@@ -39,7 +39,6 @@ class PPGThread
         puts ""
         puts "ppg switch"
         puts "    switches the navigator, and user of record"
-        puts ""
         puts "ppg modify -attribute -role new-value"
         puts "     change email, name or repo attribute of a user"
         puts "     ppg modify -email -driver for@example.com"
