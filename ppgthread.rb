@@ -106,21 +106,20 @@ class PPGThread
     def process(input)
         output = ""
         if input.strip.start_with?('ppg')
-            if input.start_with?('ppg commit')
-                string = "#{input.gsub('ppg', 'git')}"
-                output = commit (string)
-            elsif input == 'ppg set-time'
+            if input == 'ppg set-time'
                 reset_time
             elsif input == 'ppg switch'
                 switch_roles
             else
                 string = "#{input.gsub('ppg', 'git')}"
                 puts(string)
-                output = `#{string}`
+                process(string)
             end
         else
             if input.start_with?('git commit')
                 output = commit(input)
+            elsif input.start_with?('git push')
+                output = push
             else
                 output = `#{input}`
             end
@@ -133,6 +132,14 @@ class PPGThread
         rescue => boom
             puts boom
             print header_string
+    end
+
+    def push
+        output = ""
+        output << `git push first_partner`
+        output << "\n"
+        output << `git push second_partner`
+        return output
     end
 
     def switch_roles
