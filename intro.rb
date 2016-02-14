@@ -30,7 +30,7 @@ module Intro
 
   def email_prompt(role)
     puts "\nWhat is the #{role}'s email?"
-    email = gets.chomp
+    email = input_prompt
     raise DuplicateError, "Driver and Navigator cannot have the same email!" if @user_1 && @user_1.email == email
     raise FormatError, "Please enter a valid email address" if !(User.valid_email?(email))
 
@@ -42,7 +42,7 @@ module Intro
 
   def repo_prompt(role)
     puts "\nWhat is the #{role}'s git repository url?"
-    repo = gets.chomp
+    repo = input_prompt
     raise DuplicateError, "Driver and Navigator cannot have the same repo!" if @user_1 && @user_1.repo == repo
     raise FormatError, "Please enter a valid Github Repository address" if !(User.valid_repo?(repo))
 
@@ -67,7 +67,7 @@ module Intro
 
   def switch_timer_prompt
     puts 'Switch every 15 minutes? (press enter or enter different number)'
-    switch_timer = gets.chomp
+    switch_timer = input_prompt
     if switch_timer =~ /([yn]+[eo]?s?|^$)/
       if timer_confirm?()
         15
@@ -110,7 +110,7 @@ module Intro
   end
 
   def confirm_prompt
-    confirmation = gets.chomp
+    confirmation = input_prompt
 
     if !(confirmation.downcase =~ /([yn]+[eo]?s?|^$)/)
       raise InputError, "Enter y or n"
