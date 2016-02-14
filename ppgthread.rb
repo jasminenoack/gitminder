@@ -76,6 +76,9 @@ class PPGThread
 
     def handle_key_press
       c = read_char
+      if @getting_response
+        return
+      end
       case c
       when " "
         @strings[-1] << " "
@@ -127,27 +130,40 @@ class PPGThread
         if input.strip.start_with?('ppg')
             if input.start_with?('ppg commit')
                 string = "#{input.gsub('ppg', 'git')}"
-                unless input.include?('-m')
-                    print header_string
-                    puts "Please enter a commit message:"
-                    message = gets.chomp
-                    string += " -m #{message}"
-                end
-                puts string
-                output = `#{string}`
-                puts output
+                output = commit (string)
             else
-                puts "not a ppg string #{input}"
+                sting = "#{input.gsub('ppg', 'git')}"
+                output = `#{string}`
             end
         else
-            output = `#{input}`
-            if output.length > 0
-                puts output
+            if input.start_with?('git commit')
+                output = commit(input)
+            else
+                output = `#{input}`
             end
         end
-        print header_string
+        if output.length > 0
+            puts output
+            puts header_string
+        end
         rescue => boom
             puts boom
-        print header_string
+            print header_string
+    end
+
+    def commit(string)
+        unless string.include?('-m')
+                puts "Please enter a commit message:"
+                @getting_response = true
+                message = gets.chomp
+                unless message.include?('"')
+                    message = "\"#{message}\""
+                end
+                @getting_response = false
+                string += " -m #{message}"
+            end
+            puts string
+            output = `#{string}`
+            return output
     end
 end
